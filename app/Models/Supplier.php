@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model
+class Supplier extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','name','is_active','modified_by'];
+    protected $fillable = ['slug','name','island_id','province_id','municipality_id',
+    'brgy_id','street_address','is_active','modified_by'];
 
     protected static function boot()
     {
@@ -25,13 +26,9 @@ class Company extends Model
         });
     }
 
-    public function department()
-    {
-        return $this->hasMany(Department::class,'company_id');
-    }
-
     public function user()
     {
-        return $this->hasMany(User::class,'company_id');
+        $this->hasMany(User::class,'supplier_id');
     }
+
 }

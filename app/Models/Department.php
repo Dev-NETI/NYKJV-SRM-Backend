@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model
+class Department extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','name','is_active','modified_by'];
+    protected $fillable = ['slug','company_id','name','is_active','modified_by'];
 
     protected static function boot()
     {
@@ -25,13 +25,13 @@ class Company extends Model
         });
     }
 
-    public function department()
+    public function company()
     {
-        return $this->hasMany(Department::class,'company_id');
+        return $this->belongsTo(Company::class,'company_id');
     }
 
     public function user()
     {
-        return $this->hasMany(User::class,'company_id');
+        return $this->hasMany(User::class,'department_id');
     }
 }
