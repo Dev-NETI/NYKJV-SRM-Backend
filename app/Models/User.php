@@ -74,4 +74,10 @@ class User extends Authenticatable
     {
         $this->belongsTo(Supplier::class,'supplier_id');
     }
+
+    //accessor
+    public function getFullNameAttribute()
+    {
+        return $this->firstname." ".$this->lastname;
+    }
 }

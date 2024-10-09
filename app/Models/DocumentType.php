@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Department extends Model
+class DocumentType extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','company_id','name','is_active','modified_by'];
+    protected $fillable = ['slug','name','is_active','modified_by'];
 
     protected static function boot()
     {
@@ -23,15 +23,5 @@ class Department extends Model
         static::updating(function ($model) {
             $model->modified_by = 'system';//Auth::user()->full_name
         });
-    }
-
-    public function company()
-    {
-        return $this->belongsTo(Company::class,'company_id');
-    }
-
-    public function user()
-    {
-        return $this->hasMany(User::class,'department_id');
     }
 }
