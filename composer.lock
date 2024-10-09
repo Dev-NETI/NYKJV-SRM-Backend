@@ -1555,8 +1555,7 @@
             "support": {
                 "issues": "https://github.com/laravel/jetstream/issues",
                 "source": "https://github.com/laravel/jetstream"
-            },
-            "time": "2024-09-09T13:52:03+00:00
+            }
         },
         {
             "name": "laravel/prompts",

@@ -24,7 +24,10 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'f_name',
+        'm_name',
+        'l_name',
+        'suffix',
         'email',
         'password',
         'email_verified',
@@ -77,22 +80,32 @@ class User extends Authenticatable
 
     public function company()
     {
-        return $this->belongsTo(Company::class,'company_id');
+        return $this->belongsTo(Company::class, 'company_id');
     }
 
     public function department()
     {
-        return $this->belongsTo(Department::class , 'department_id');
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function supplier()
     {
-        $this->belongsTo(Supplier::class,'supplier_id');
+        $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     //accessor
     public function getFullNameAttribute()
     {
-        return $this->firstname." ".$this->lastname;
+        return $this->firstname . " " . $this->lastname;
+    }
+
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_users');
+    }
+
+    public function hasRole($roleSlug)
+    {
+        return $this->roles()->where('slug', $roleSlug)->exists();
     }
 }
