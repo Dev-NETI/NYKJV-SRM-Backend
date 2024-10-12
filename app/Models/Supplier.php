@@ -28,7 +28,7 @@ class Supplier extends Model
 
     public function user()
     {
-        $this->hasMany(User::class,'supplier_id');
+        return $this->hasMany(User::class, 'supplier_id');
     }
 
 }
