@@ -17,11 +17,11 @@ class Department extends Model
             $latestId = $model::orderBy('id', 'DESC')->first();
             $slug = $latestId != NULL ? encrypt($latestId->id + 1) : encrypt(1);
             $model->slug = $slug;
-            $model->modified_by = 'system';//Auth::user()->full_name
+            $model->modified_by = 'system';
         });
 
         static::updating(function ($model) {
-            $model->modified_by = 'system';//Auth::user()->full_name
+            $model->modified_by = 'system';
         });
     }
 
