@@ -31,4 +31,9 @@ class Supplier extends Model
         $this->hasMany(User::class,'supplier_id');
     }
 
+    public function department_supplier()
+    {
+        return $this->hasMany(DepartmentSupplier::class,'supplier_id');
+    }
+
 }
