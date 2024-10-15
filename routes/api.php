@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GoogleController;
@@ -33,3 +34,5 @@ Route::resource('/products', ProductController::class)->only(['index', 'store','
 //     // $user->token
 //     dd($user);
 // });
+
+Route::resource('/document-type',DocumentTypeController::class)->only(['index']);
