@@ -44,6 +44,8 @@ class User extends Authenticatable
         'is_active',
     ];
 
+    protected $with = ['role_users', 'roles'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -99,13 +101,14 @@ class User extends Authenticatable
         return $this->firstname . " " . $this->lastname;
     }
 
+    public function role_users()
+    {
+        return $this->hasMany(RoleUser::class);
+    }
+
+    // You might also want to add a direct relationship to roles
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_users');
-    }
-
-    public function hasRole($roleSlug)
-    {
-        return $this->roles()->where('slug', $roleSlug)->exists();
     }
 }
