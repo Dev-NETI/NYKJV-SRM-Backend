@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\GoogleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,3 +26,5 @@ Route::get('/auth/callback', [GoogleController::class, 'callback']);
 //     // $user->token
 //     dd($user);
 // });
+
+Route::resource('/document-type',DocumentTypeController::class)->only(['index']);
