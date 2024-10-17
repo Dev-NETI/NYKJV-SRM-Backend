@@ -24,4 +24,9 @@ class DocumentType extends Model
             $model->modified_by = 'system';//Auth::user()->full_name
         });
     }
+
+    public function supplier_document()
+    {
+        return $this->belongsTo(SupplierDocument::class,'document_type_id');
+    }
 }

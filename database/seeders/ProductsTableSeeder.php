@@ -13,6 +13,7 @@ class ProductsTableSeeder extends Seeder
      */
     public function run(): void
     {
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         // Inserting 10 sample products
         for ($i = 1; $i <= 10; $i++) {
             DB::table('products')->insert([
