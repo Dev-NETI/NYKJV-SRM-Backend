@@ -6,6 +6,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -35,5 +36,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('document_access')->group(function () {
             Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
         });
+        Route::resource('/users-management', UserController::class)->only(['index', 'store']);
     });
 });
