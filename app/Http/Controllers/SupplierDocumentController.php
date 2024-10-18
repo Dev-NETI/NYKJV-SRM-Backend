@@ -25,6 +25,7 @@ class SupplierDocumentController extends Controller
                     'document_type_id' => $request['documentTypeId'],
                     'name' => $request['fileName'],
                     'file_path' => $request['filePath'],
+                    'expired_at' => $request['expiration'] ,
                 ]);
 
                 if(!$store){
@@ -37,11 +38,11 @@ class SupplierDocumentController extends Controller
             }
     }
 
-    public function show($supplierId)
+    public function showDocuments($supplierId,$isActive = 1)
     {
         try {
             $documentData = SupplierDocument::where('supplier_id', $supplierId)
-                        ->where('is_active',1)
+                        ->where('is_active',$isActive)
                         ->orderBy('created_at','desc')
                         ->get();
 
@@ -69,15 +70,62 @@ class SupplierDocumentController extends Controller
             return response()->json(true, 200);
 
         } catch (ModelNotFoundException $e) {
-            return response()->json($e->getMessage(), 404);
+            return response()->json(false, 404);
 
         } catch (QueryException $e) {
             
-            return response()->json($e->getMessage(), 500);
+            return response()->json(false, 500);
 
         } catch (Exception $e) {
             
-            return response()->json($e->getMessage(), 500);
+            return response()->json(false, 500);
+        }
+    }
+
+    public function recycleDocument($id)
+    {
+        try {
+            $documentData = SupplierDocument::where('id', $id)
+                            ->firstOrFail();
+                            
+            $documentData->update([
+                'is_active' => 1
+            ]);
+            
+            return response()->json(true, 200);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(false, 404);
+
+        } catch (QueryException $e) {
+            
+            return response()->json(false, 500);
+
+        } catch (Exception $e) {
+            
+            return response()->json(false, 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $documentData = SupplierDocument::where('id', $id)
+                            ->firstOrFail();
+                            
+            $documentData->delete();
+            
+            return response()->json(true, 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(false, 404);
+
+        } catch (QueryException $e) {
+            
+            return response()->json(false, 500);
+
+        } catch (Exception $e) {
+            
+            return response()->json(false, 500);
         }
     }
 

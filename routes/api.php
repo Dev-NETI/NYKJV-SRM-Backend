@@ -26,7 +26,9 @@ Route::resource('/category', CategoriesController::class)->only(['index', 'store
 Route::resource('/brands', BrandController::class)->only(['index', 'store','update']);
 Route::resource('/products', ProductController::class)->only(['index', 'store','update']);
 Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
-Route::resource('/supplier-document', SupplierDocumentController::class)->only(['store','show']);
+Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
+Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
+Route::resource('/supplier-document', SupplierDocumentController::class)->only(['store','destroy']);
 
 // Route::get('/auth/redirect', function () {
 //     return Socialite::driver('google')->redirect();
