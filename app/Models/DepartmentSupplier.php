@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Supplier extends Model
+class DepartmentSupplier extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','name','island_id','province_id','municipality_id',
-    'brgy_id','street_address','is_active','modified_by'];
+    protected $fillable = ['slug','department_id','supplier_id','is_active','modified_by'];
 
     protected static function boot()
     {
@@ -18,22 +17,21 @@ class Supplier extends Model
             $latestId = $model::orderBy('id', 'DESC')->first();
             $slug = $latestId != NULL ? encrypt($latestId->id + 1) : encrypt(1);
             $model->slug = $slug;
-            $model->modified_by = 'system';
+            $model->modified_by = 'system';//Auth::user()->full_name
         });
 
         static::updating(function ($model) {
-            $model->modified_by = 'system';
+            $model->modified_by = 'system';//Auth::user()->full_name
         });
     }
 
-    public function user()
+    public function department()
     {
-        return $this->hasMany(User::class, 'supplier_id');
+        return $this->belongsTo(Department::class,'department_id');
     }
 
-    public function department_supplier()
+    public function supplier()
     {
-        return $this->hasMany(DepartmentSupplier::class,'supplier_id');
+        return $this->belongsTo(Supplier::class,'supplier_id');
     }
-
 }
