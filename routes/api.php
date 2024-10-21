@@ -21,9 +21,9 @@ Route::get('/checking-status-otp', [AuthController::class, 'checkingStatusOTP'])
 Route::get('/auth/redirect', [GoogleController::class, 'redirect']);
 Route::get('/auth/callback', [GoogleController::class, 'callback']);
 
-Route::resource('/category', CategoriesController::class)->only(['index', 'store','update']);
-Route::resource('/brands', BrandController::class)->only(['index', 'store','update']);
-Route::resource('/products', ProductController::class)->only(['index', 'store','update']);
+Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
 
 // Route::get('/auth/redirect', function () {
 //     return Socialite::driver('google')->redirect();
