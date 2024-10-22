@@ -23,9 +23,9 @@ Route::get('/checking-status-otp', [AuthController::class, 'checkingStatusOTP'])
 Route::get('/auth/redirect', [GoogleController::class, 'redirect']);
 Route::get('/auth/callback', [GoogleController::class, 'callback']);
 
-Route::resource('/category', CategoriesController::class)->only(['index', 'store','update']);
-Route::resource('/brands', BrandController::class)->only(['index', 'store','update']);
-Route::resource('/products', ProductController::class)->only(['index', 'store','update']);
+Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
 Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
 Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
 Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
