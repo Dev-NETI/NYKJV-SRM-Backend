@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Products;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,15 +15,16 @@ class ProductsTableSeeder extends Seeder
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-        // Inserting 10 sample products
-        for ($i = 1; $i <= 10; $i++) {
+        Products::truncate();
+        
+        for ($i = 1; $i <= 300; $i++) {
             DB::table('products')->insert([
                 'slug' => encrypt($i),
-                'supplier_id' => rand(1, 5),  // Assuming suppliers with IDs 1-5 exist
-                'category_id' => rand(1, 3),  // Assuming categories with IDs 1-3 exist
-                'brand_id' => rand(1, 4),     // Assuming brands with IDs 1-4 exist
+                'supplier_id' => rand(1, 20),  
+                'category_id' => rand(1, 3),  
+                'brand_id' => rand(1, 4),     
                 'name' => 'Product '.$i,
-                'price' => rand(100, 1000),   // Random price between 100 and 1000
+                'price' => rand(100, 1000),  
                 'specification' => 'Specification details for Product '.$i,
                 'is_active' => true,
                 'modified_by' => 'Seeder Script',
