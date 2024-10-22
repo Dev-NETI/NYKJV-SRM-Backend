@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Products extends Model
+class OrderStatus extends Model
 {
-    use HasFactory;
-    protected $fillable = ['slug', 'supplier_id', 'category_id', 'brand_id', 'name', 'price', 'specification', 'is_active', 'modified_by'];
+    protected $fillable = ['slug', 'name', 'is_active', 'modified_by'];
+
     protected static function boot()
     {
         parent::boot();
@@ -16,16 +15,16 @@ class Products extends Model
             $latestId = $model::orderBy('id', 'DESC')->first();
             $slug = $latestId != NULL ? encrypt($latestId->id + 1) : encrypt(1);
             $model->slug = $slug;
-            $model->modified_by = 'system';
+            $model->modified_by = 'system';//Auth::user()->full_name
         });
 
         static::updating(function ($model) {
-            $model->modified_by = 'system';
+            $model->modified_by = 'system';//Auth::user()->full_name
         });
     }
 
     public function order()
     {
-        return $this->hasMany(Order::class,'product_id');
+        return $this->hasMany(Order::class,'order_status_id');
     }
 }

@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Products extends Model
+class Order extends Model
 {
-    use HasFactory;
-    protected $fillable = ['slug', 'supplier_id', 'category_id', 'brand_id', 'name', 'price', 'specification', 'is_active', 'modified_by'];
+    protected $fillable = ['slug', 'reference_number','product_id','order_status_id','quantity', 'is_active', 'modified_by','created_by'];
     protected static function boot()
     {
         parent::boot();
@@ -24,8 +22,18 @@ class Products extends Model
         });
     }
 
-    public function order()
+    public function order_status()
     {
-        return $this->hasMany(Order::class,'product_id');
+        return $this->belongsTo(OrderStatus::class,'order_status_id');
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Products::class,'product_id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class,'supplier_id');
     }
 }
