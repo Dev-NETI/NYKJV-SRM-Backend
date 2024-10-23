@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\BrandController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierDocumentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -46,5 +48,8 @@ Route::get('/order/show-order-by-status/{orderStatusId}/{supplierId}',[OrderCont
 
 Route::resource('/document-type',DocumentTypeController::class)->only(['index']);
 
+ 
 Route::apiResource('/chats', ChatsController::class);
 Route::apiResource('/messages', MessagesController::class);
+
+Route::get('/users', [UserController::class, 'index']);
