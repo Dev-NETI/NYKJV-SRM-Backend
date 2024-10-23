@@ -9,7 +9,11 @@ class ChatsController extends Controller
 {
      public function index()
      {
-         return response()->json(Chats::with('messages')->get());
+         $userId = auth()->id();
+         $chats = Chats::where('sender_id', $userId)
+             ->with('messages')
+             ->get();
+         return response()->json($chats);
      }
  
      public function show($id)

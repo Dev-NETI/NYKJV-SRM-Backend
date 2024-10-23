@@ -16,9 +16,9 @@ class Chats extends Model
         return $this->hasMany(Messages::class);
     }
 
-    // Relationship: A chat belongs to a sender (user).
-    public function sender()
+    // Relationship: A chat can have multiple participants
+    public function participants()
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        return $this->belongsToMany(User::class, 'user_id');
     }
 }

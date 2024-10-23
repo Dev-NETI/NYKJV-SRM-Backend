@@ -100,7 +100,7 @@ class User extends Authenticatable
     //accessor
     public function getFullNameAttribute()
     {
-        return $this->firstname . " " . $this->lastname;
+        return $this->f_name . " " . $this->l_name;
     }
 
     public function role_users()
@@ -123,4 +123,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Messages::class, 'sender_id');
     }
+
+   
 }
