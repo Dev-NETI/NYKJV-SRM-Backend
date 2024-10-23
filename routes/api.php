@@ -4,7 +4,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ChatsController;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierDocumentController;
@@ -43,3 +45,6 @@ Route::get('/order/show-order-by-status/{orderStatusId}/{supplierId}',[OrderCont
 // });
 
 Route::resource('/document-type',DocumentTypeController::class)->only(['index']);
+
+Route::apiResource('/chats', ChatsController::class);
+Route::apiResource('/messages', MessagesController::class);

@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Chats;
+use App\Models\Messages;
 
 class User extends Authenticatable
 {
@@ -110,5 +112,15 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_users');
+    }
+
+    public function chats()
+    {
+        return $this->hasMany(Chats::class, 'sender_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Messages::class, 'sender_id');
     }
 }
