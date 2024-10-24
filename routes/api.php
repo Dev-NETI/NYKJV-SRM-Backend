@@ -4,12 +4,14 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentTypeController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Facades\Socialite;
 
 //google routes
 Route::get('/auth/redirect', [GoogleController::class, 'redirect']);
@@ -36,6 +38,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('document_access')->group(function () {
             Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
         });
-        Route::resource('/users-management', UserController::class)->only(['index', 'store']);
     });
+    Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show']);
+    Route::resource('/department', DepartmentController::class)->only(['index']);
+    Route::resource('/companies', CompanyController::class)->only(['index']);
+    Route::resource('/supplier', SupplierController::class)->only(['index']);
 });

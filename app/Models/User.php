@@ -40,7 +40,7 @@ class User extends Authenticatable
         'is_active',
     ];
 
-    protected $with = ['role_users', 'roles'];
+    protected $with = ['role_users', 'roles', 'company', 'department', 'supplier'];
 
     protected static function boot()
     {
@@ -105,7 +105,7 @@ class User extends Authenticatable
 
     public function supplier()
     {
-        $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
     public function getFullNameAttribute()
