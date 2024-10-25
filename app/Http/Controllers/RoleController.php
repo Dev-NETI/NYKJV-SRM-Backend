@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -58,5 +59,18 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         //
+    }
+
+    public function availableRoles(Request $request)
+    {
+        $user = User::find($request->id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $roles = Role::whereNotIn('id', $user->roles->pluck('id'))->get();
+
+        return response()->json($roles);
     }
 }
