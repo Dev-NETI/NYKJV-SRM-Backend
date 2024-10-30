@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    protected $fillable = ['slug', 'reference_number','product_id','order_status_id','quantity', 'is_active', 'modified_by','created_by'];
+    protected $fillable = ['slug', 'reference_number', 'product_id', 'order_status_id', 'quantity', 'is_active', 'modified_by', 'created_by'];
     protected static function boot()
     {
         parent::boot();
@@ -24,16 +24,21 @@ class Order extends Model
 
     public function order_status()
     {
-        return $this->belongsTo(OrderStatus::class,'order_status_id');
+        return $this->belongsTo(OrderStatus::class, 'order_status_id');
     }
 
     public function product()
     {
-        return $this->belongsTo(Products::class,'product_id');
+        return $this->belongsTo(Products::class, 'product_id');
     }
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class,'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
+    }
+
+    public function order_attachment()
+    {
+        return $this->hasMany(OrderAttachment::class, 'reference_number', 'reference_number');
     }
 }

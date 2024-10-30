@@ -56,6 +56,42 @@ class OrderController extends Controller
         }
     }
 
+    public function showOrderItems($referenceNumber)
+    {
+        try {
+            $orderItems = Order::with(['product', 'product.brand'])
+                ->where('is_active', true)
+                ->where('reference_number', $referenceNumber)
+                ->get();
+
+            return response()->json($orderItems);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(false);
+        } catch (QueryException $e) {
+            return response()->json(false);
+        } catch (Exception $e) {
+            return response()->json(false);
+        }
+    }
+
+    public function updateOrderStatus($referenceNumber, $newOrderStatus)
+    {
+        try {
+            $updatedRows = Order::where('reference_number', $referenceNumber)
+                ->update(['order_status_id' => $newOrderStatus]);
+
+            if ($updatedRows === 0) {
+                return response()->json(false);
+            }
+
+            return response()->json(true);
+        } catch (QueryException $e) {
+            return response()->json(false, 400);
+        } catch (Exception $e) {
+            return response()->json(false, 400);
+        }
+    }
+
 
     /**
      * Store a newly created resource in storage.
