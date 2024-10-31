@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chats extends Model
 {
-    protected $fillable = [
-        'sender_id',
-    ];
+   protected $with = ['messages', 'participants'];
 
     // Relationship: A chat can have many messages.
     public function messages()
@@ -19,6 +17,6 @@ class Chats extends Model
     // Relationship: A chat can have multiple participants
     public function participants()
     {
-        return $this->belongsToMany(User::class, 'user_id');
+        return $this->hasMany(ChatParticipants::class, 'chat_id');
     }
 }
