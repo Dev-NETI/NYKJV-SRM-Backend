@@ -6,6 +6,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -24,15 +25,7 @@ Route::get('/auth/callback', [GoogleController::class, 'callback']);
 Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update']);
 
-// Route::get('/auth/redirect', function () {
-//     return Socialite::driver('google')->redirect();
-// });
-
-// Route::get('/auth/callback', function () {
-//     $user = Socialite::driver('google')->user();
-//     // $user->token
-//     dd($user);
-// });
 
 Route::resource('/document-type',DocumentTypeController::class)->only(['index']);

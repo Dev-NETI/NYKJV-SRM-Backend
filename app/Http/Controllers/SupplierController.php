@@ -41,9 +41,12 @@ class SupplierController extends Controller
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'island_id' => 'required|integer',
-                'province_id' => 'required|integer',
-                'municipality_id' => 'required|integer',
+                'island' => 'required|string',
+                'region_id' => 'required|integer',
+                'province_id' => 'nullable|integer',
+                'district_id' => 'nullable|integer',
+                'city_id' => 'nullable|integer',
+                'municipality_id' => 'nullable|integer',
                 'brgy_id' => 'required|integer',
                 'street_address' => 'required|string|max:255',
             ]);
@@ -62,7 +65,7 @@ class SupplierController extends Controller
             Log::error('Validation failed while storing supplier: ' . json_encode($e->errors()));
             return response()->json([
                 'message' => 'Validation error occurred',
-                'errors' => $e->errors(), // Return validation errors
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
             Log::error('Error storing supplier data: ' . $e->getMessage());
@@ -72,6 +75,7 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -94,15 +98,21 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($slug)
+    public function edit(string $id)
     {
-        $supplier = Supplier::where('slug', $slug)->first();
-
-        if (!$supplier) {
-            return response()->json(['error' => 'Supplier not found'], 404);
+        try {
+            $supplier = Supplier::findOrFail($id);
+            return response()->json([
+                'supplier' => $supplier,
+                'message' => 'Successfully fetched supplier',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Supplier ID not found',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        return response()->json($supplier);
     }
 
     /**
@@ -116,11 +126,14 @@ class SupplierController extends Controller
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'island_id' => 'required|integer',
-                'province_id' => 'required|integer',
-                'municipality_id' => 'required|integer',
+                'island' => 'required|string',
+                'region_id' => 'required|integer',
+                'province_id' => 'nullable|integer',
+                'district_id' => 'nullable|integer',
+                'city_id' => 'nullable|integer',
+                'municipality_id' => 'nullable|integer',
                 'brgy_id' => 'required|integer',
-                'street_address' => 'nullable|string|max:255',
+                'street_address' => 'required|string|max:255',
             ]);
         } catch (ValidationException $e) {
             Log::error('Validation failed for supplier update: ' . json_encode($e->errors()));
@@ -142,5 +155,36 @@ class SupplierController extends Controller
     public function destroy(string $id)
     {
         // Implement the destroy method if needed
+        try {
+            $supplier = Supplier::findOrFail($id);
+            $supplier->delete();
+            return response()->json([
+                'message' => 'Successfully deleted supplier',
+                'supplier' => $supplier
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error deleting supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Supplier not found',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function fetch_update(string $id)
+    {
+        try {
+            $supplier = Supplier::findOrFail($id);
+            return response()->json([
+                'supplier' => $supplier,
+                'message' => 'Successfully fetched supplier',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Supplier ID not found',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
