@@ -16,7 +16,15 @@ class ChatsController extends Controller
         //get chats where user is a participant
         $chats = Chats::whereHas('participants', function ($query) use ($userId) {
             $query->where('user_id', $userId);
-        })->get();
+        })
+        ->with(['participants.sender', 'messages'])
+        ->withCount([
+            'messages as unread_count' => function ($query) use ($userId) {
+                $query->where('sender_id', '!=', $userId)
+                      ->where('unread', true);
+            }
+        ])
+        ->get();
 
         return response()->json($chats);
     }

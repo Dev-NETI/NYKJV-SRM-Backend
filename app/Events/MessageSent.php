@@ -3,12 +3,14 @@
 namespace App\Events;
 
 use App\Models\Chats;
+use App\Models\Messages;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class MessageSent implements ShouldBroadcast
 {
@@ -16,7 +18,7 @@ class MessageSent implements ShouldBroadcast
 
     public $message;
 
-    public function __construct($message)
+    public function __construct(Messages $message)
     {
         $this->message = $message;
     }
@@ -24,7 +26,7 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn()
     {
         return [
-            new PrivateChannel('chat.'.$this->message->session_id),
+            new PrivateChannel('chat.'.$this->message->chats_id),
         ];
     }
 
@@ -37,10 +39,9 @@ class MessageSent implements ShouldBroadcast
     {
         return [
             'id' => $this->message->id,
-            'content' => $this->message->content,
-            'session_id' => $this->message->session_id,
-            'sender_id' => $this->message->sender_id,
-            'created_at' => $this->message->created_at,
+            'chats_id' => $this->message->chats_id,
+            'content' => $this->message->content, 
+            'sender_id' => $this->message->sender_id, 
         ];
     }
 }

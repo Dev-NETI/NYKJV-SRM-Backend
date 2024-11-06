@@ -56,5 +56,6 @@ Route::resource('/document-type', DocumentTypeController::class)->only(['index']
 
 Route::apiResource('/chats', ChatsController::class);
 Route::apiResource('/messages', MessagesController::class);
+Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
 
 Route::get('/users', [UserController::class, 'index']);
