@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Chats;
 use App\Events\MessageSent;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -42,7 +43,7 @@ class MessagesController extends Controller
             $message = Messages::create([
                 'content' => $request->content,
                 'chats_id' => $request->chats_id,
-                'sender_id' => auth()->id(),
+                'sender_id' => Auth::id(),
                 'unread' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

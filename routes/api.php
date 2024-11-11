@@ -58,4 +58,4 @@ Route::apiResource('/chats', ChatsController::class);
 Route::apiResource('/messages', MessagesController::class);
 Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
 
-Route::get('/users', [UserController::class, 'index']);
+Route::get('/chat/users', [ChatsController::class, 'users']);

@@ -10,11 +10,6 @@ class UserController extends Controller
 
     public function index()
     {
-        $currentUser = auth()->user();
-        $users = User::where('id', '!=', $currentUser->id)->get()->map(function ($user) {
-            $user->name = $user->getFullNameAttribute();
-            return $user;
-        });
-        return response()->json($users);
+        return response()->json(User::with('role_users.role')->get());
     }
 }

@@ -7,6 +7,7 @@ use App\Models\Chats;
 use App\Models\Messages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class ChatsController extends Controller
 {
@@ -17,14 +18,14 @@ class ChatsController extends Controller
         $chats = Chats::whereHas('participants', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-        ->with(['participants.sender', 'messages'])
-        ->withCount([
-            'messages as unread_count' => function ($query) use ($userId) {
-                $query->where('sender_id', '!=', $userId)
-                      ->where('unread', true);
-            }
-        ])
-        ->get();
+            ->with(['participants.sender', 'messages'])
+            ->withCount([
+                'messages as unread_count' => function ($query) use ($userId) {
+                    $query->where('sender_id', '!=', $userId)
+                        ->where('unread', true);
+                }
+            ])
+            ->get();
 
         return response()->json($chats);
     }
@@ -96,5 +97,15 @@ class ChatsController extends Controller
                 'chat_id' => $chatId
             ]
         ]);
+    }
+
+    public function users()
+    {
+        $currentUser = auth()->user();
+        $users = User::where('id', '!=', $currentUser->id)->get()->map(function ($user) {
+            $user->name = $user->getFullNameAttribute();
+            return $user;
+        });
+        return response()->json($users);
     }
 }
