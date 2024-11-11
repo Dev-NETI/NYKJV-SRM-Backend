@@ -80,4 +80,14 @@ class UserController extends Controller
             return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function update(Request $request, $slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        if (!$user) {
+            return response()->json(false);
+        }
+        $user->update($request->all());
+        return response()->json(['message' => 'User updated successfully', 'user' => $user], 201);
+    }
 }

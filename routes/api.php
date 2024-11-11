@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
         });
     });
-    Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show']);
+    Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
     Route::resource('/supplier', SupplierController::class)->only(['index']);

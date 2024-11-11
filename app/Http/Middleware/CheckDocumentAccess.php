@@ -19,7 +19,7 @@ class CheckDocumentAccess
         $user = Auth::user();
         // Check if the user has a role that allows category access
         $hasAccess = $user->roles->contains(function ($role) {
-            return in_array($role->name, ['Supplier Documen']);
+            return in_array($role->name, ['Supplier Document']);
         });
 
         if (!$hasAccess) {
