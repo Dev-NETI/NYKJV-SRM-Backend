@@ -86,3 +86,8 @@ Route::apiResource('/messages', MessagesController::class);
 Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
 
 Route::get('/chat/users', [ChatsController::class, 'users']);
+
+Route::post('/chats/{chat}/participants', [ChatsController::class, 'addParticipant'])
+    ->middleware('auth:sanctum');
+Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
+    ->middleware('auth:sanctum');

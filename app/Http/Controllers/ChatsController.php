@@ -18,7 +18,7 @@ class ChatsController extends Controller
         $chats = Chats::whereHas('participants', function ($query) use ($userId) {
             $query->where('user_id', $userId);
         })
-            ->with(['participants.sender', 'messages'])
+            ->with(['participants.user', 'messages'])
             ->withCount([
                 'messages as unread_count' => function ($query) use ($userId) {
                     $query->where('sender_id', '!=', $userId)
@@ -107,5 +107,36 @@ class ChatsController extends Controller
             return $user;
         });
         return response()->json($users);
+    }
+
+    public function addParticipant(Request $request, Chats $chat)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id'
+        ]);
+
+        // Check if user is already a participant
+        if ($chat->participants()->where('user_id', $request->user_id)->exists()) {
+            return response()->json(['message' => 'User is already a participant'], 422);
+        }
+
+        // Add participant
+        $chat->participants()->create([
+            'user_id' => $request->user_id
+        ]);
+
+        return response()->json(['message' => 'Participant added successfully']);
+    }
+
+    public function removeParticipant(Chats $chat, User $user)
+    {
+        // Don't allow removing the last participant
+        if ($chat->participants()->count() <= 1) {
+            return response()->json(['message' => 'Cannot remove last participant'], 422);
+        }
+
+        $chat->participants()->where('user_id', $user->id)->delete();
+
+        return response()->json(['message' => 'Participant removed successfully']);
     }
 }
