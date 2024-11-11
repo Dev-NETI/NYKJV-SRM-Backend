@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Chats;
+use App\Models\Messages;
 
 class User extends Authenticatable
 {
@@ -58,7 +60,6 @@ class User extends Authenticatable
         });
     }
 
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -78,6 +79,7 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'full_name',
     ];
 
     /**
@@ -110,7 +112,7 @@ class User extends Authenticatable
 
     public function getFullNameAttribute()
     {
-        return $this->firstname . " " . $this->lastname;
+        return $this->f_name . " " . $this->l_name;
     }
 
     public function role_users()
@@ -123,4 +125,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Role::class, 'role_users');
     }
+
+    public function chats()
+    {
+        return $this->hasMany(Chats::class, 'sender_id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Messages::class, 'sender_id');
+    }
+
+   
 }

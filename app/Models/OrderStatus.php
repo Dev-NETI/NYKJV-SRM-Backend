@@ -2,13 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DocumentType extends Model
+class OrderStatus extends Model
 {
-    use HasFactory;
-    protected $fillable = ['slug','name','is_active','modified_by'];
+    protected $fillable = ['slug', 'name', 'is_active', 'modified_by'];
 
     protected static function boot()
     {
@@ -25,8 +23,8 @@ class DocumentType extends Model
         });
     }
 
-    public function supplier_document()
+    public function order()
     {
-        return $this->belongsTo(SupplierDocument::class,'document_type_id');
+        return $this->hasMany(Order::class,'order_status_id');
     }
 }

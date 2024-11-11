@@ -2,14 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DocumentType extends Model
+class OrderAttachment extends Model
 {
-    use HasFactory;
-    protected $fillable = ['slug','name','is_active','modified_by'];
-
+    protected $fillable = ['slug', 'reference_number', 'name', 'file_path', 'is_active', 'modified_by'];
     protected static function boot()
     {
         parent::boot();
@@ -17,16 +14,16 @@ class DocumentType extends Model
             $latestId = $model::orderBy('id', 'DESC')->first();
             $slug = $latestId != NULL ? encrypt($latestId->id + 1) : encrypt(1);
             $model->slug = $slug;
-            $model->modified_by = 'system';//Auth::user()->full_name
+            $model->modified_by = 'system';
         });
 
         static::updating(function ($model) {
-            $model->modified_by = 'system';//Auth::user()->full_name
+            $model->modified_by = 'system';
         });
     }
 
-    public function supplier_document()
+    public function order_attachment()
     {
-        return $this->belongsTo(SupplierDocument::class,'document_type_id');
+        return $this->belongsTo(Order::class, 'reference_number', 'reference_number');
     }
 }
