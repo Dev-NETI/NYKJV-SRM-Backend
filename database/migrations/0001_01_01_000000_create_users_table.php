@@ -23,6 +23,7 @@ return new class extends Migration
             $table->foreignId('current_team_id')->nullable();
             $table->string('picture')->nullable();
             $table->string('provider_token')->nullable();
+            $table->string('provider_id')->nullable();
             $table->string('email_verified')->nullable();
             $table->timestamps();
         });
