@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Messages extends Model
 {
     protected $fillable = [
-        'chat_id',
+        'chats_id',
         'sender_id',
         'content',
         'unread',
@@ -15,6 +15,7 @@ class Messages extends Model
         'attachment_type',
         'attachment_size',
     ];
+    protected $with = ['sender'];
 
     public function chat()
     {

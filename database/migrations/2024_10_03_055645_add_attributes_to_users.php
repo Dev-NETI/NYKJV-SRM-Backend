@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('company_id')->after('slug')->nullable();
             $table->unsignedBigInteger('department_id')->after('company_id')->nullable();
             $table->unsignedBigInteger('supplier_id')->after('department_id')->nullable();
-            $table->integer('contact_number')->after('suffix')->nullable();
+            $table->string('contact_number')->after('suffix')->nullable();
             $table->boolean('is_active')->after('password')->default(true);
             $table->text('modified_by')->after('remember_token')->nullable();
         });

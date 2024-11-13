@@ -17,10 +17,10 @@ class SupplierSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Supplier::truncate();
 
-        for($x = 0 ; $x < 51 ; $x++){
+        for ($x = 0; $x < 5; $x++) {
             Supplier::create([
                 'name' => fake()->domainWord(),
-                'street_address' => fake()->streetAddress() ,
+                'street_address' => fake()->streetAddress(),
             ]);
         }
     }

@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
-class RoleController extends Controller
+class DepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index() {}
+    public function index()
+    {
+        $department = Department::where('is_active', 1)->get();
+
+        if ($department->isEmpty()) {
+            return response()->json(['message' => 'No data found'], 404);
+        }
+
+        return response()->json($department, 200);
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -32,7 +40,7 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Role $role)
+    public function show(string $id)
     {
         //
     }
@@ -40,7 +48,7 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Role $role)
+    public function edit(string $id)
     {
         //
     }
@@ -48,7 +56,7 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -56,21 +64,8 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Role $role)
+    public function destroy(string $id)
     {
         //
-    }
-
-    public function availableRoles(Request $request)
-    {
-        $user = User::find($request->id);
-
-        if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
-        }
-
-        $roles = Role::whereNotIn('id', $user->roles->pluck('id'))->get();
-
-        return response()->json($roles);
     }
 }

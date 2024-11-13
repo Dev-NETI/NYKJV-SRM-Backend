@@ -22,9 +22,9 @@ class OrderSeeder extends Seeder
             4 => [101],
             5 => [111],
         ];
-        foreach($productId as $index=>[$productId]){
+        foreach ($productId as $index => [$productId]) {
             Order::create([
-                'reference_number' => '#202410220847001',
+                'reference_number' => '202410220847001',
                 'product_id' => $productId,
                 'quantity' => 1,
                 'order_status_id' => 1,
