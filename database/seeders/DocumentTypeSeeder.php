@@ -17,15 +17,18 @@ class DocumentTypeSeeder extends Seeder
 
         //test data
         $data = [
-            0 => [1,"Compliance Documents"],
-            1 => [2,"Certification"],
-            2 => [3,"Company Profile"],
-            3 => [1,"Service Level Agreements"],
+            0 => ["Accreditation Form", 1],
+            1 => ["Company's Form", 1],
+            2 => ["List of Products/Services", 1],
+            3 => ["List of Clients", 1],
+            4 => ["BIR Registration", 1],
+            5 => ["Business Permit", 1],
         ];
 
-        foreach($data as $index=>[$companyId,$name]){
+        foreach($data as $index=>[$name, $documentTypeCategoryId]){
             DocumentType::create([
                     'name' => $name,
+                    'document_type_category_id' => $documentTypeCategoryId,
                 ]);
         }
     }

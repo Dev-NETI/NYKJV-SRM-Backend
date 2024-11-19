@@ -68,6 +68,14 @@ Route::get('/order/show-order-items/{referenceNumber}', [OrderController::class,
 Route::patch('/order/update-order-status/{referenceNumber}/{newOrderStatus}', [OrderController::class, 'updateOrderStatus']);
 Route::resource('/order-attachment', OrderAttachmentController::class)->only(['store']);
 
+Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
+Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
+
+// Route::get('/suppliers/{supplierId}/documents/{categoryId}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
+// Route::get('/suppliers/{supplierId}/missing-documents/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
+// Route::get('/suppliers/{supplierId}/document/{documentTypeId}/exists', [SupplierDocumentController::class, 'hasDocument']);
+// Route::post('/supplier-document/overwrite', [SupplierDocumentController::class, 'overwrite']);
+
 // Route::get('/auth/redirect', function () {
 //     return Socialite::driver('google')->redirect();
 // });
