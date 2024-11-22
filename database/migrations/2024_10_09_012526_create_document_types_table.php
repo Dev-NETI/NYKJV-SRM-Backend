@@ -14,10 +14,14 @@ return new class extends Migration
         Schema::create('document_types', function (Blueprint $table) {
             $table->id();
             $table->text('slug')->nullable();
+            $table->unsignedBigInteger('document_type_category_id')->nullable();
             $table->text('name')->nullable();
+            $table->text('category')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('modified_by')->nullable();
             $table->timestamps();
+
+            $table->foreign('document_type_category_id')->references('id')->on('document_type_categories');
         });
     }
 

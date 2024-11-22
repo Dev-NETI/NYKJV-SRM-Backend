@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Supplier extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','name','island_id','province_id','municipality_id',
+    protected $fillable = ['slug','name','island','region_id','province_id','district_id','city_id','municipality_id',
     'brgy_id','street_address','is_active','modified_by'];
 
     protected static function boot()
@@ -28,12 +28,22 @@ class Supplier extends Model
 
     public function user()
     {
-        $this->hasMany(User::class,'supplier_id');
+        return $this->hasMany(User::class, 'supplier_id');
     }
 
     public function department_supplier()
     {
         return $this->hasMany(DepartmentSupplier::class,'supplier_id');
+    }
+
+    public function supplier_document()
+    {
+        return $this->hasMany(SupplierDocument::class,'supplier_id');
+    }
+
+    public function supplier()
+    {
+        return $this->hasMany(Order::class,'supplier_id');
     }
 
 }

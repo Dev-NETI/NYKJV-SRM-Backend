@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentType extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug','name','is_active','modified_by'];
+    protected $fillable = ['slug','name', 'document_type_category_id', 'is_active','modified_by'];
 
     protected static function boot()
     {
@@ -23,5 +23,15 @@ class DocumentType extends Model
         static::updating(function ($model) {
             $model->modified_by = 'system';//Auth::user()->full_name
         });
+    }
+
+    public function supplier_document()
+    {
+        return $this->belongsTo(SupplierDocument::class,'document_type_id');
+    }
+
+    public function document_type_category() 
+    {
+        return $this->belongsTo(DocumentTypeCategory::class,'document_type_category_id');
     }
 }

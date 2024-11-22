@@ -6,17 +6,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Support\Facades\Auth; 
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Chats;
+use App\Models\Messages;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -27,14 +24,8 @@ class User extends Authenticatable
         'f_name',
         'm_name',
         'l_name',
-        'suffix',
         'email',
         'password',
-        'email_verified',
-        'password',
-        'picture',
-        'provider_id',
-        'provider_token',
         'slug',
         'company_id',
         'department_id',
@@ -43,6 +34,24 @@ class User extends Authenticatable
         'contact_number',
         'is_active',
     ];
+
+    protected $with = ['role_users', 'roles', 'company', 'department', 'supplier'];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            $lastId = $model::orderBy('id', 'DESC')->first();
+            $slug = $lastId != NULL ? encrypt($lastId->id + 1) : encrypt(1);
+            $model->slug = $slug;
+            $model->is_active = 1;
+            $model->modified_by = 'system';
+        });
+
+        static::updating(function ($model) {
+            $model->modified_by = Auth::user()->FullName;
+        });
+    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -62,7 +71,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_url',
+     
+        'full_name',
     ];
 
     /**
@@ -78,34 +88,47 @@ class User extends Authenticatable
         ];
     }
 
+    
     public function company()
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        return $this->belongsTo(Company::class,'company_id');
     }
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'department_id');
+        return $this->belongsTo(Department::class , 'department_id');
     }
 
     public function supplier()
     {
-        $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id');
     }
 
-    //accessor
     public function getFullNameAttribute()
     {
-        return $this->firstname . " " . $this->lastname;
+        return $this->f_name . " " . $this->l_name;
     }
 
+    public function role_users()
+    {
+        return $this->hasMany(RoleUser::class);
+    }
+
+    // You might also want to add a direct relationship to roles
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_users');
     }
 
-    public function hasRole($roleSlug)
+    public function chats()
     {
-        return $this->roles()->where('slug', $roleSlug)->exists();
+        return $this->hasMany(Chats::class, 'sender_id');
     }
+
+    public function messages()
+    {
+        return $this->hasMany(Messages::class, 'sender_id');
+    }
+
+   
 }
