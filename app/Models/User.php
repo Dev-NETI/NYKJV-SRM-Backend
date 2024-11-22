@@ -15,11 +15,7 @@ use App\Models\Messages;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +26,6 @@ class User extends Authenticatable
         'f_name',
         'm_name',
         'l_name',
-        'suffix',
         'email',
         'password',
         'slug',
@@ -97,12 +92,12 @@ class User extends Authenticatable
 
     public function company()
     {
-        return $this->belongsTo(Company::class, 'company_id');
+        return $this->belongsTo(Company::class,'company_id');
     }
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'department_id');
+        return $this->belongsTo(Department::class , 'department_id');
     }
 
     public function supplier()

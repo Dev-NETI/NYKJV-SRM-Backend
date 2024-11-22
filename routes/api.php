@@ -76,15 +76,6 @@ Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [Su
 // Route::get('/suppliers/{supplierId}/document/{documentTypeId}/exists', [SupplierDocumentController::class, 'hasDocument']);
 // Route::post('/supplier-document/overwrite', [SupplierDocumentController::class, 'overwrite']);
 
-// Route::get('/auth/redirect', function () {
-//     return Socialite::driver('google')->redirect();
-// });
-
-// Route::get('/auth/callback', function () {
-//     $user = Socialite::driver('google')->user();
-//     // $user->token
-//     dd($user);
-// });
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
 
