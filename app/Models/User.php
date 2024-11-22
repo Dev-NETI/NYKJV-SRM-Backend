@@ -6,9 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
+use Illuminate\Support\Facades\Auth; 
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Chats;
 use App\Models\Messages;
@@ -73,7 +71,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_url',
+     
         'full_name',
     ];
 
@@ -90,6 +88,7 @@ class User extends Authenticatable
         ];
     }
 
+    
     public function company()
     {
         return $this->belongsTo(Company::class,'company_id');
