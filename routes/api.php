@@ -7,6 +7,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -26,6 +27,6 @@ Route::resource('/category', CategoriesController::class)->only(['index', 'store
 Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update']);
-
+Route::resource('/supplier-user', SupplierUserController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update']);
 
 Route::resource('/document-type',DocumentTypeController::class)->only(['index']);
