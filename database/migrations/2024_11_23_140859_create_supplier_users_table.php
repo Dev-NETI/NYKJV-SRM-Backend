@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('document_types', function (Blueprint $table) {
+        Schema::create('supplier_users', function (Blueprint $table) {
             $table->id();
             $table->text('slug')->nullable();
-            $table->unsignedBigInteger('document_type_category_id')->nullable();
-            $table->text('name')->nullable();
-            $table->text('category')->nullable();
+            $table->text('company')->nullable();
+            $table->text('contact_person');
+            $table->text('contact_number')->nullable();
+            $table->text('email_address')->nullable();
+            $table->text('address')->nullable();
+            $table->text('products')->nullable();
+            $table->text('modified_by')->default('system');
             $table->boolean('is_active')->default(true);
-            $table->text('modified_by')->nullable();
             $table->timestamps();
-
-            $table->foreign('document_type_category_id')->references('id')->on('document_type_categories');
         });
     }
 
@@ -30,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('document_types');
+        Schema::dropIfExists('supplier_users');
     }
 };
