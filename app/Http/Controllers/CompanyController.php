@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Supplier;
+use App\Models\Company;
 use Illuminate\Http\Request;
 
-class SupplierController extends Controller
+class CompanyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $supplier = Supplier::where('is_active', 1)->get();
+        $company = Company::where('is_active', 1)->get();
 
-        if ($supplier->isEmpty()) {
+        if ($company->isEmpty()) {
             return response()->json(['message' => 'No data found'], 404);
         }
 
-        return response()->json($supplier, 200);
+        return response()->json($company, 200);
     }
 
     /**
