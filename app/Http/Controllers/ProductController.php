@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Products;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
@@ -35,7 +38,7 @@ class ProductController extends Controller
                 'productName.required' => 'The product name field is required.',
                 'productName.string' => 'The product name must be a valid string.',
                 'productName.max' => 'The product name may not be greater than 255 characters.',
-                'productName.unique' => '" '. $request['productName'] .' " has already been taken.',
+                'productName.unique' => '" ' . $request['productName'] . ' " has already been taken.',
                 'productPrice.required' => 'The product price is required.',
                 'productPrice.numeric' => 'The product price must be a number.',
                 'productPrice.min' => 'The product price must be at least 1.',
@@ -43,7 +46,7 @@ class ProductController extends Controller
                 'productBrand.required' => 'The product brand is required.',
                 'productSpecification.required' => 'The product specification is required.',
             ]);
-        
+
             // Create the product
             $product = Products::create([
                 'category_id' => $request['productCategory'],
@@ -52,28 +55,25 @@ class ProductController extends Controller
                 'name' => $request['productName'],
                 'specification' => $request['productSpecification'],
             ]);
-        
+
             // Check if the creation was successful
             if (!$product) {
                 return response()->json(['success' => false, 'message' => 'Failed to create the product.']);
             }
-        
+
             return response()->json(['success' => true, 'message' => 'Product created successfully.']);
-        
         } catch (ValidationException $e) {
             // Return validation error messages
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-        
         } catch (Exception $e) {
             // Return a general error response
             return response()->json(['success' => false, 'message' => 'An error occurred. Please try again.']);
         }
-        
     }
 
     /**
- * Display the specified resource.
- */
+     * Display the specified resource.
+     */
     public function show(string $id)
     {
         try {
@@ -98,8 +98,8 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      */
     /**
- * Update the specified resource in storage.
- */
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, string $id)
     {
         try {
@@ -114,6 +114,37 @@ class ProductController extends Controller
             ]);
 
             return response()->json(true);
+        } catch (Exception $e) {
+            return response()->json(false, 400);
+        }
+    }
+
+    public function updatePrice($productId, $newPrice)
+    {
+        $validator = Validator::make(
+            ['price' => $newPrice],
+            ['price' => 'required|numeric|min:0']
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid price. Please enter a valid positive number.'
+            ], 422);
+        }
+
+        try {
+            $product = Products::findOrFail($productId);
+
+            $product->update([
+                'price' => $newPrice
+            ]);
+
+            return response()->json(true);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(false, 400);
+        } catch (QueryException $e) {
+            return response()->json(false, 400);
         } catch (Exception $e) {
             return response()->json(false, 400);
         }
