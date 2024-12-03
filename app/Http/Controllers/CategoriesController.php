@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
@@ -41,12 +42,12 @@ class CategoriesController extends Controller
             ]);
         
             // Create the category
-            $store = Category::create([
+            $category = Category::create([
                 'name' => $request['categoryName'],
             ]);
         
             // Check if the creation was successful
-            if (!$store) {
+            if (!$category) {
                 return response()->json(['success' => false, 'message' => 'Failed to create the category.']);
             }
         
@@ -81,55 +82,31 @@ class CategoriesController extends Controller
     /**
      * Update the specified resource in storage.
      */
-
     public function update(Request $request, string $id)
     {
-        // Validate the request data with a custom message for the unique rule
         $validatedData = $request->validate([
             'categoryName' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('categories', 'name')->ignore($id),
+                Rule::unique('categories', 'name')->ignore((int)$id),
             ],
         ], [
-            'categoryName.unique' => 'The specified category name is already in use.',
+            'categoryName.unique' => 'The specified " '. $request['categoryName'] .' " name is already in use.',
         ]);
 
         try {
-            // Find the category by ID
             $category = Category::findOrFail($id);
+            $category->update([
+                'name' => $request->input('categoryName'),
+            ]);
 
-            // Check if the category name has changed
-            if ($category->name === $validatedData['categoryName']) {
-                return response()->json([
-                    'message' => 'No changes were made as the category name is the same.'
-                ], 200);
-            }
-
-            // Check if the category is associated with other entities
-            if ($category->products()->exists()) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'Category cannot be updated as it has associated products.'
-                ], 422);
-            }
-
-            // Update the category name
-            $category->update(['name' => $validatedData['categoryName']]);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Category updated successfully.'
-            ], 200);
-
+            return response()->json(true);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while updating the category.'
-            ], 400);
+            return response()->json(false, 400);
         }
     }
+    
 
 
     /**
@@ -137,6 +114,15 @@ class CategoriesController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $category = Category::findOrFail($id);
+            $category->update(['is_active' => 0]);
+
+            return response()->json(['message' => 'Category deactivated successfully']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Category not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to deactivate category'], 400);
+        }
     }
 }

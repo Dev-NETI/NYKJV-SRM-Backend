@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
@@ -40,12 +41,12 @@ class BrandController extends Controller
             ]);
         
             // Create the brand
-            $store = Brand::create([
+            $Brand = Brand::create([
                 'name' => $request['brandName'],
             ]);
         
             // Check if the creation was successful
-            if (!$store) {
+            if (!$Brand) {
                 return response()->json(['success' => false, 'message' => 'Failed to create the brand.']);
             }
         
@@ -82,60 +83,43 @@ class BrandController extends Controller
      */
      public function update(Request $request, string $id)
      {
-         // Validate the request data with a custom message for the unique rule
-         $validatedData = $request->validate([
-             'brandName' => [
-                 'required',
-                 'string',
-                 'max:255',
-                 Rule::unique('brands', 'name')->ignore($id),
-             ],
-         ], [
-             'brandName.unique' => 'The specified brand name is already in use.',
-         ]);
- 
-         try {
-             // Find the brand by ID
-             $brand = Brand::findOrFail($id);
- 
-             // Check if the brand name has changed
-             if ($brand->name === $validatedData['brandName']) {
-                 return response()->json([
-                     'message' => 'No changes were made as the brand name is the same.'
-                 ], 200);
-             }
- 
-             // Check if the brand is associated with other entities
-             if ($brand->products()->exists()) {
-                 return response()->json([
-                     'success' => false, 
-                     'message' => 'Brand cannot be updated as it has associated products.'
-                 ], 422);
-             }
- 
-             // Update the brand name
-             $brand->update(['name' => $validatedData['brandName']]);
- 
-             return response()->json([
-                 'success' => true,
-                 'message' => 'Brand updated successfully.'
-             ], 200);
- 
-         } catch (Exception $e) {
-             return response()->json([
-                 'success' => false,
-                 'message' => 'An error occurred while updating the brand.'
-             ], 400);
-         }
+        $validatedData = $request->validate([
+            'brandName' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('brands', 'name')->ignore((int)$id),
+            ],
+        ], [
+            'brandName.unique' => 'The specified " '. $request['brandName'] .' " name is already in use.',
+        ]);
+
+        try {
+            $brand = Brand::findOrFail($id);
+            $brand->update([
+                'name' => $request->input('brandName'),
+            ]);
+
+            return response()->json(true);
+        } catch (Exception $e) {
+            return response()->json(false, 400);
+        }
      }
-
-
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $brand = Brand::findOrFail($id);
+            $brand->update(['is_active' => 0]);
+
+            return response()->json(['message' => 'Brand deactivated successfully']);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Brand not found'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Unable to deactivate brand'], 400);
+        }
     }
 }

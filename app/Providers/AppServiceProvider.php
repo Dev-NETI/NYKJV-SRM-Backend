@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\ServiceProvider;
+use App\Http\Middleware\EnsureOTPVerified;
 
 class AppServiceProvider extends ServiceProvider
 {
