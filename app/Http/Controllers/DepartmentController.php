@@ -2,23 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Supplier;
+use App\Models\Department;
 use Illuminate\Http\Request;
 
-class SupplierController extends Controller
+class DepartmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $supplier = Supplier::where('is_active', 1)->get();
+        $department = Department::where('is_active', 1)->get();
 
-        if ($supplier->isEmpty()) {
+        if ($department->isEmpty()) {
             return response()->json(['message' => 'No data found'], 404);
         }
 
-        return response()->json($supplier, 200);
+        return response()->json($department, 200);
     }
 
     /**

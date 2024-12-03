@@ -2,24 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Supplier;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class SupplierController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $supplier = Supplier::where('is_active', 1)->get();
-
-        if ($supplier->isEmpty()) {
-            return response()->json(['message' => 'No data found'], 404);
-        }
-
-        return response()->json($supplier, 200);
-    }
+    public function index() {}
 
     /**
      * Show the form for creating a new resource.
@@ -40,7 +32,7 @@ class SupplierController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Role $role)
     {
         //
     }
@@ -48,7 +40,7 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Role $role)
     {
         //
     }
@@ -56,7 +48,7 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Role $role)
     {
         //
     }
@@ -64,8 +56,21 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Role $role)
     {
         //
+    }
+
+    public function availableRoles(Request $request)
+    {
+        $user = User::find($request->id);
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        $roles = Role::whereNotIn('id', $user->roles->pluck('id'))->get();
+
+        return response()->json($roles);
     }
 }
