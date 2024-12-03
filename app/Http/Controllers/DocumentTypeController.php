@@ -11,9 +11,9 @@ class DocumentTypeController extends Controller
     public function index()
     {
         try {
-            $documentTypeData = DocumentType::where('is_active',1)->orderBy('name','asc')->get();
+            $documentTypeData = DocumentType::where('is_active', 1)->orderBy('name', 'asc')->get();
 
-            if(!$documentTypeData){
+            if (!$documentTypeData) {
                 return response()->json(false);
             }
 
