@@ -2,17 +2,72 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrdersMailer;
 use App\Models\Order;
+use App\Models\TempQuotation;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function sendQuotation(Request $request)
+    {
+        $request->validate([
+            'fileQuotation' => 'required|file|mimes:pdf|max:2048',
+            'emails' => 'required',
+        ]);
+
+        try {
+            $quotation = $request->file('fileQuotation');
+
+            $storeQuotation = $quotation->storeAs('public/orders/quotation', $quotation->hashName());
+
+            if (!$storeQuotation) {
+                return response()->json([
+                    'response' => false,
+                    'message' => 'Whoops! Something went wrong!'
+                ], 400);
+            }
+
+            $store = TempQuotation::create([
+                'file_path' => $quotation->hashName()
+            ]);
+
+            if (!$store) {
+                return response()->json([
+                    'response' => false,
+                    'message' => 'Whoops! Something went wrong!'
+                ], 400);
+            }
+
+            $quotationUrl = env('APP_URL') . "/storage/orders/quotation/" . $quotation->hashName();
+            Mail::to($request['emails'])
+                ->send(new OrdersMailer($request['company'], $quotationUrl));
+
+            return response()->json([
+                'response' => true,
+                'message' => 'Quotation sent successfully!'
+            ], 200);
+        } catch (ValidationException $v) {
+            return response()->json([
+                'response' => false,
+                'message' => $v->getMessage()
+            ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'response' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function index()
     {
         //
