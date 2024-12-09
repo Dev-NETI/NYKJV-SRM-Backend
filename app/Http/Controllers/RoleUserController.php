@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\RoleUser as ModelsRoleUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request as FacadesRequest;
 use Illuminate\Support\Facades\Validator;
 
 class RoleUserController extends Controller
