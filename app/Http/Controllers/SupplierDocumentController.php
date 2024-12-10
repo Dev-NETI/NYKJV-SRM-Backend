@@ -14,41 +14,58 @@ class SupplierDocumentController extends Controller
 
     public function store(Request $request)
     {
-            $request->validate([
-                'supplierId' => 'required',
-                'documentTypeId' => 'required',
-                'fileName' => 'required',
-                'filePath' => 'required',
+        $request->validate([
+            'supplierId' => 'required',
+            'documentTypeId' => 'required',
+        ]);
+
+        try {
+            $document = $request->file('fileDocument');
+            $storeDocument = $document->storeAs('public/supplier-documents', $document->hashName());
+
+            if (!$storeDocument) {
+                return response()->json([
+                    'response' => false,
+                    'message' => 'Whoops! Something went wrong!'
+                ], 400);
+            }
+
+            $store = SupplierDocument::create([
+                'supplier_id' => $request['supplierId'],
+                'document_type_id' => $request['documentTypeId'],
+                'name' => $request['fileName'],
+                'file_path' => $document->hashName(),
+                'expired_at' => $request['expiration'],
             ]);
 
-            try {
-                $store = SupplierDocument::create([
-                    'supplier_id' => $request['supplierId'],
-                    'document_type_id' => $request['documentTypeId'],
-                    'name' => $request['fileName'],
-                    'file_path' => $request['filePath'],
-                    'expired_at' => $request['expiration'] ,
-                ]);
-
-                if(!$store){
-                    return response()->json(false);
-                }
-
-                return response()->json(true);
-            } catch (Exception $e) {
-                return response()->json(false);
+            if (!$store) {
+                return response()->json([
+                    'response' => false,
+                    'message' => 'Whoops! Something went wrong!'
+                ], 400);
             }
+
+            return response()->json([
+                'response' => true,
+                'message' => 'Document uploaded successfully!'
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'response' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
-    public function showDocuments($supplierId,$isActive = 1)
+    public function showDocuments($supplierId, $isActive = 1)
     {
         try {
             $documentData = SupplierDocument::where('supplier_id', $supplierId)
-                        ->where('is_active',$isActive)
-                        ->orderBy('created_at','desc')
-                        ->get();
+                ->where('is_active', $isActive)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-            if(!$documentData){
+            if (!$documentData) {
                 return response()->json(false);
             }
 
@@ -56,19 +73,18 @@ class SupplierDocumentController extends Controller
         } catch (Exception $e) {
             return response()->json(false);
         }
-
     }
 
     public function showDocumentsByCategory($supplierId, $categoryId, $isActive = 1)
     {
         try {
-           $documents = SupplierDocument::with(['document_type' => function($query) use ($categoryId, $isActive) {
+            $documents = SupplierDocument::with(['document_type' => function ($query) use ($categoryId, $isActive) {
                 $query->where('document_type_category_id', $categoryId);
             }])
-            ->where('supplier_id', $supplierId)
-            ->where('is_active', $isActive)
-            ->orderBy('created_at','desc')
-            ->get();
+                ->where('supplier_id', $supplierId)
+                ->where('is_active', $isActive)
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return response()->json($documents);
         } catch (Exception $e) {
@@ -98,7 +114,8 @@ class SupplierDocumentController extends Controller
         }
     }
 
-    public function hasDocument($supplierId, $documentTypeId) {
+    public function hasDocument($supplierId, $documentTypeId)
+    {
         try {
             $document = SupplierDocument::where('document_type_id', $documentTypeId)
                 ->where('is_active', 1)
@@ -113,21 +130,18 @@ class SupplierDocumentController extends Controller
     {
         try {
             $documentData = SupplierDocument::where('id', $id)
-                            ->firstOrFail();
+                ->firstOrFail();
 
             $documentData->update([
                 'is_active' => 0
             ]);
 
             return response()->json(true, 200);
-
         } catch (ModelNotFoundException $e) {
             return response()->json(false, 404);
-
         } catch (QueryException $e) {
 
             return response()->json(false, 500);
-
         } catch (Exception $e) {
 
             return response()->json(false, 500);
@@ -138,21 +152,18 @@ class SupplierDocumentController extends Controller
     {
         try {
             $documentData = SupplierDocument::where('id', $id)
-                            ->firstOrFail();
+                ->firstOrFail();
 
             $documentData->update([
                 'is_active' => 1
             ]);
 
             return response()->json(true, 200);
-
         } catch (ModelNotFoundException $e) {
             return response()->json(false, 404);
-
         } catch (QueryException $e) {
 
             return response()->json(false, 500);
-
         } catch (Exception $e) {
 
             return response()->json(false, 500);
@@ -163,22 +174,19 @@ class SupplierDocumentController extends Controller
     {
         try {
             $documentData = SupplierDocument::where('id', $id)
-                            ->firstOrFail();
+                ->firstOrFail();
 
             $documentData->delete();
 
             return response()->json(true, 200);
         } catch (ModelNotFoundException $e) {
             return response()->json(false, 404);
-
         } catch (QueryException $e) {
 
             return response()->json(false, 500);
-
         } catch (Exception $e) {
 
             return response()->json(false, 500);
         }
     }
-
 }

@@ -9,19 +9,19 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class MailerLoginOtp extends Mailable
+class OrdersMailer extends Mailable
 {
     use Queueable, SerializesModels;
-
-    public $mail, $otp;
+    public $company;
+    public $quotationUrl;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($mail, $otp)
+    public function __construct($company, $quotationUrl)
     {
-        $this->mail = $mail;
-        $this->otp = $otp;
+        $this->company = $company;
+        $this->quotationUrl = $quotationUrl;
     }
 
     /**
@@ -30,7 +30,7 @@ class MailerLoginOtp extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'SRM Login OTP',
+            subject: 'Quotation from ' . $this->company,
         );
     }
 
@@ -40,7 +40,7 @@ class MailerLoginOtp extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.login-otp-mail',
+            view: 'mail.order-mail',
         );
     }
 

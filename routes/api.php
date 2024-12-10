@@ -63,6 +63,7 @@ Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class
 Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
 Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
 Route::resource('/supplier-document', SupplierDocumentController::class)->only(['store', 'destroy']);
+Route::post('/order/send-quotation', [OrderController::class, 'sendQuotation']);
 Route::get('/order/show-order-by-status/{orderStatusId}/{supplierId}', [OrderController::class, 'showOrderByStatus']);
 Route::get('/order/show-order-items/{referenceNumber}', [OrderController::class, 'showOrderItems']);
 Route::patch('/order/update-order-status/{referenceNumber}/{newOrderStatus}', [OrderController::class, 'updateOrderStatus']);
@@ -76,15 +77,6 @@ Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [Su
 // Route::get('/suppliers/{supplierId}/document/{documentTypeId}/exists', [SupplierDocumentController::class, 'hasDocument']);
 // Route::post('/supplier-document/overwrite', [SupplierDocumentController::class, 'overwrite']);
 
-// Route::get('/auth/redirect', function () {
-//     return Socialite::driver('google')->redirect();
-// });
-
-// Route::get('/auth/callback', function () {
-//     $user = Socialite::driver('google')->user();
-//     // $user->token
-//     dd($user);
-// });
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
 

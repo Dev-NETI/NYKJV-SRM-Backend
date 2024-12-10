@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $users = User::where('is_active', 1)
+            ->where('f_name', 'like', '%' . $request->f_name . '%')
+            ->where('l_name', 'like', '%' . $request->l_name . '%')
+            ->paginate($request->limit ?? 10);
 
         if (!$users) {
             return response()->json(['error' => 'No users found'], 404);

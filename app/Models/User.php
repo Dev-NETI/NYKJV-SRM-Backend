@@ -7,19 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Fortify\TwoFactorAuthenticatable;
-use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Chats;
 use App\Models\Messages;
 
 class User extends Authenticatable
 {
-    use HasApiTokens;
-    use HasFactory;
-    use HasProfilePhoto;
-    use Notifiable;
-    use TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -30,7 +24,6 @@ class User extends Authenticatable
         'f_name',
         'm_name',
         'l_name',
-        'suffix',
         'email',
         'password',
         'slug',
@@ -78,7 +71,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_url',
+
         'full_name',
     ];
 
@@ -94,6 +87,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 
     public function company()
     {
@@ -135,6 +129,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Messages::class, 'sender_id');
     }
-
-   
 }

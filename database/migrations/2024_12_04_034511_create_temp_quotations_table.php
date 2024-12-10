@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('role_users', function (Blueprint $table) {
+        Schema::create('temp_quotations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('role_id')->constrained()->onDelete('cascade');
+            $table->text('slug')->nullable();
+            $table->text('file_path')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->text('created_by')->nullable();
             $table->timestamps();
-
-            $table->unique(['user_id', 'role_id']);
         });
     }
 
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('role_users');
+        Schema::dropIfExists('temp_quotations');
     }
 };
