@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\OrdersMailer;
 use App\Models\Order;
+use App\Models\OrderDocument;
 use App\Models\TempQuotation;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,48 +23,52 @@ class OrderController extends Controller
         $request->validate([
             'fileQuotation' => 'required|file|mimes:pdf|max:2048',
             'emails' => 'required',
+            'supplierId' => 'required',
+            'orderDocumentTypeId' => 'required',
         ]);
 
         try {
             $quotation = $request->file('fileQuotation');
 
-            $storeQuotation = $quotation->storeAs('public/orders/quotation', $quotation->hashName());
+            $storeQuotation = $quotation->storeAs('public/order-document', $quotation->hashName());
 
             if (!$storeQuotation) {
                 return response()->json([
                     'response' => false,
-                    'message' => 'Whoops! Something went wrong!'
+                    'message' => 'Whoops! Something went wrong!',
+                    'severity' => 'error'
                 ], 400);
             }
 
-            $store = TempQuotation::create([
+            $store = OrderDocument::create([
+                'supplier_id' => $request['supplierId'],
+                'order_document_type_id' => $request['orderDocumentTypeId'],
+                'file_name' => $request['fileName'],
                 'file_path' => $quotation->hashName()
             ]);
 
             if (!$store) {
                 return response()->json([
                     'response' => false,
-                    'message' => 'Whoops! Something went wrong!'
+                    'message' => 'Whoops! Something went wrong!',
+                    'severity' => 'error'
                 ], 400);
             }
 
-            $quotationUrl = env('APP_URL') . "/storage/orders/quotation/" . $quotation->hashName();
+            $quotationUrl = env('APP_URL') . "/storage/order-document/" . $quotation->hashName();
             Mail::to($request['emails'])
                 ->send(new OrdersMailer($request['company'], $quotationUrl));
 
             return response()->json([
                 'response' => true,
-                'message' => 'Quotation sent successfully!'
+                'message' => 'Quotation sent successfully!',
+                'severity' => 'success'
             ], 200);
-        } catch (ValidationException $v) {
-            return response()->json([
-                'response' => false,
-                'message' => $v->getMessage()
-            ], 500);
         } catch (Exception $e) {
             return response()->json([
                 'response' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'severity' => 'error'
             ], 500);
         }
     }
