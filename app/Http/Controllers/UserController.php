@@ -106,4 +106,15 @@ class UserController extends Controller
         $user->update($request->all());
         return response()->json(['message' => 'User updated successfully', 'user' => $user], 201);
     }
+
+    public function softDelete($slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        if (!$user) {
+            return response()->json(false);
+        }
+        $user->is_active = 0;
+        $user->save();
+        return response()->json(['message' => 'User deleted successfully', 'user' => $user], 201);
+    }
 }
