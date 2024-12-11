@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
-    Route::resource('/supplier', SupplierController::class)->only(['index']);
+    Route::resource('/supplier', SupplierController::class)->only(['store', 'index']);
     Route::get('/roles/available-roles/{id}', [RoleController::class, 'availableRoles']);
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
