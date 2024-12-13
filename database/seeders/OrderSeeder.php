@@ -24,7 +24,7 @@ class OrderSeeder extends Seeder
         ];
         foreach ($productId as $index => [$productId]) {
             Order::create([
-                'reference_number' => '202410220847001',
+                'reference_number' =>  $index +  rand(1, 100),
                 'product_id' => $productId,
                 'quantity' => 1,
                 'order_status_id' => 1,
