@@ -14,14 +14,16 @@ class OrdersMailer extends Mailable
     use Queueable, SerializesModels;
     public $company;
     public $quotationUrl;
+    public $emailBody;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($company, $quotationUrl)
+    public function __construct($company, $quotationUrl, $emailBody)
     {
         $this->company = $company;
         $this->quotationUrl = $quotationUrl;
+        $this->emailBody = $emailBody;
     }
 
     /**

@@ -57,7 +57,7 @@ class OrderController extends Controller
 
             $quotationUrl = env('APP_URL') . "/storage/order-document/" . $quotation->hashName();
             Mail::to($request['emails'])
-                ->send(new OrdersMailer($request['company'], $quotationUrl));
+                ->send(new OrdersMailer($request['company'], $quotationUrl, $request['emailBody']));
 
             return response()->json([
                 'response' => true,
