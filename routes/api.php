@@ -12,6 +12,8 @@ use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderAttachmentController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderDocumentController;
+use App\Http\Controllers\OrderDocumentTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
@@ -71,6 +73,8 @@ Route::resource('/order-attachment', OrderAttachmentController::class)->only(['s
 
 Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
+Route::resource('/order-document', OrderDocumentController::class)->only(['show']);
+Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
 
 // Route::get('/suppliers/{supplierId}/documents/{categoryId}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 // Route::get('/suppliers/{supplierId}/missing-documents/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
@@ -79,8 +83,6 @@ Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [Su
 
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
-
-
 Route::apiResource('/chats', ChatsController::class);
 Route::apiResource('/messages', MessagesController::class);
 Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
