@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
+    Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
     Route::resource('/supplier', SupplierController::class)->only(['store', 'index']);
