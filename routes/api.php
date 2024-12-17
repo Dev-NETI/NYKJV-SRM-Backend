@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ChatsController;
+use App\Http\Controllers\DepartmentSupplierController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderAttachmentController;
@@ -75,6 +76,7 @@ Route::get('/supplier-document/show-documents-by-category/{supplierId}/{category
 Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
 Route::resource('/order-document', OrderDocumentController::class)->only(['show']);
 Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
+Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
 
 // Route::get('/suppliers/{supplierId}/documents/{categoryId}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 // Route::get('/suppliers/{supplierId}/missing-documents/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
