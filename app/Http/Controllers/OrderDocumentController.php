@@ -8,13 +8,19 @@ use Illuminate\Http\Request;
 
 class OrderDocumentController extends Controller
 {
-    public function show($supplierId = null)
+    public function showOrderDocument($supplierId = 'null', $departmentId = 'null')
     {
         try {
             $query = OrderDocument::with(['supplier', 'order_document_type'])
                 ->where('is_active', true);
-            if ($supplierId != null) {
+            if ($supplierId != 'null') {
                 $query->where('supplier_id', $supplierId);
+            } else {
+                $query->whereHas('supplier', function ($query2) use ($departmentId) {
+                    $query2->whereHas('department_supplier', function ($query3) use ($departmentId) {
+                        $query3->where('department_id', $departmentId);
+                    });
+                });
             }
             $documentData = $query->get();
 

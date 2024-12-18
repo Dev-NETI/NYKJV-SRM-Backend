@@ -75,7 +75,7 @@ Route::resource('/order-attachment', OrderAttachmentController::class)->only(['s
 
 Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
-Route::resource('/order-document', OrderDocumentController::class)->only(['show']);
+Route::get('/order-document/get-documents/{supplierId}/{departmentId}', [OrderDocumentController::class, 'showOrderDocument']);
 Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
 Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
 
