@@ -8,10 +8,13 @@ use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ChatsController;
+use App\Http\Controllers\DepartmentSupplierController;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrderAttachmentController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderDocumentController;
+use App\Http\Controllers\OrderDocumentTypeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
@@ -48,6 +51,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
+    Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
     Route::resource('/supplier', SupplierController::class)->only(['store', 'index']);
@@ -71,6 +75,9 @@ Route::resource('/order-attachment', OrderAttachmentController::class)->only(['s
 
 Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
+Route::get('/order-document/get-documents/{supplierId}/{departmentId}', [OrderDocumentController::class, 'showOrderDocument']);
+Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
+Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
 
 // Route::get('/suppliers/{supplierId}/documents/{categoryId}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 // Route::get('/suppliers/{supplierId}/missing-documents/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
@@ -79,8 +86,6 @@ Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [Su
 
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
-
-
 Route::apiResource('/chats', ChatsController::class);
 Route::apiResource('/messages', MessagesController::class);
 Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);

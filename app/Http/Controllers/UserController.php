@@ -14,8 +14,21 @@ class UserController extends Controller
     {
         $users = User::where('is_active', 1)
             ->where('f_name', 'like', '%' . $request->f_name . '%')
-            ->where('l_name', 'like', '%' . $request->l_name . '%')
-            ->paginate($request->limit ?? 10);
+            ->where('l_name', 'like', '%' . $request->l_name . '%');
+
+        if ($request->company_info) {
+            $users = $users->with('company');
+        }
+
+        if ($request->department_info) {
+            $users = $users->with('department');
+        }
+
+        if ($request->supplier_info) {
+            $users = $users->with('supplier');
+        }
+
+        $users = $users->paginate($request->limit ?? 10);
 
         if (!$users) {
             return response()->json(['error' => 'No users found'], 404);
@@ -92,5 +105,16 @@ class UserController extends Controller
         }
         $user->update($request->all());
         return response()->json(['message' => 'User updated successfully', 'user' => $user], 201);
+    }
+
+    public function softDelete($slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        if (!$user) {
+            return response()->json(false);
+        }
+        $user->is_active = 0;
+        $user->save();
+        return response()->json(['message' => 'User deleted successfully', 'user' => $user], 201);
     }
 }
