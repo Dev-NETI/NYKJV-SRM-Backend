@@ -26,7 +26,7 @@ Route::get('/auth/callback', [GoogleController::class, 'callback']);
 Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
-Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update']);
+Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update','search']);
 Route::resource('/supplier-user', SupplierUserController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update']);
 
 Route::resource('/document-type',DocumentTypeController::class)->only(['index']);

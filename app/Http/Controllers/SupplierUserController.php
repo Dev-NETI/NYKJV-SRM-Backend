@@ -59,11 +59,12 @@ class SupplierUserController extends Controller
                 'Error' => $e->getMessage()
             ], 500);
         }
-    }
+    }          
 
     /**
      * Display the specified resource.
      */
+
     public function show($id)
     {
         // Attempt to fetch the supplier by ID
@@ -77,10 +78,6 @@ class SupplierUserController extends Controller
         // If found, return the supplier data
         return response()->json($supplierUser);
     }
-
-
-
-
 
     /**
      * Show the form for editing the specified resource.

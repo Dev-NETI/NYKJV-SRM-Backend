@@ -13,23 +13,27 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $suppliers = Supplier::all();
-            return response()->json([
-                'suppliers' => $suppliers,
-                'message' => 'Suppliers fetched successfully',
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('Error fetching suppliers: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to fetch suppliers',
-                'error' => $e->getMessage(),
-            ], 500);
+        $query = Supplier::query();
+    
+        if ($request->has('name') && $request->name != '') {
+            $query->where('name', 'like', '%' . $request->name . '%');
         }
+    
+        $suppliers = $query->paginate(10);
+    
+        return response()->json([
+            'suppliers' => $suppliers->items(),
+            'pagination' => [
+                'current_page' => $suppliers->currentPage(),
+                'total' => $suppliers->total(),
+                'last_page' => $suppliers->lastPage(),
+            ]
+        ]);
     }
-
+    
+    
     /**
      * Store a newly created resource in storage.
      */
@@ -187,4 +191,46 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+
+    public function search(Request $request)
+    {
+        try {
+            // Get search query parameters
+            $name = $request->input('name');
+            $perPage = $request->input('per_page', 10);  // Allow users to specify per page
+    
+            // Validate the name parameter (if provided)
+            if (!is_string($name) || empty($name)) {
+                return response()->json([
+                    'message' => 'Invalid or missing search term',
+                    'suppliers' => [],
+                ], 400);  // Return bad request if the name is not a valid string
+            }
+    
+            // Sanitize the search term to escape special characters for LIKE query
+            $sanitizedSearchTerm = addcslashes($name, '%_'); // Escape % and _
+    
+            // Search for suppliers with the sanitized name using a "like" query
+            $suppliers = Supplier::where('name', 'like', '%' . $sanitizedSearchTerm . '%')
+                ->paginate($perPage);
+    
+            return response()->json([
+                'message' => 'Search results fetched successfully',
+                'suppliers' => $suppliers->items(),
+                'pagination' => [
+                    'current_page' => $suppliers->currentPage(),
+                    'last_page' => $suppliers->lastPage(),
+                    'total' => $suppliers->total(),
+                    'per_page' => $suppliers->perPage(),
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error searching suppliers: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error searching suppliers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 }
