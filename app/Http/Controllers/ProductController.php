@@ -170,7 +170,7 @@ class ProductController extends Controller
             $product->update([
                 'category_id' => $request['productCategory'],
                 'brand_id' => $request['productBrand'],
-                'product_image' => $productImage->hashName(), // Use hash name for the image
+                'product_image' => 'SW5K6m7SwlK1CYMvnEL91R6P2KAT9tSIQNwsNyfq.png', // Use hash name for the image
                 'name' => $request['productName'],
                 'currency' => $request['productCurrency'],
                 'price' => $request['productPrice'],
