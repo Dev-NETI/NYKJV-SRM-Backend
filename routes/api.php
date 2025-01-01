@@ -21,6 +21,7 @@ use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierDocumentController;
 use App\Http\Controllers\UserController;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
 });
+
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
@@ -72,6 +74,8 @@ Route::get('/order/show-order-by-status/{orderStatusId}/{supplierId}', [OrderCon
 Route::get('/order/show-order-items/{referenceNumber}', [OrderController::class, 'showOrderItems']);
 Route::patch('/order/update-order-status/{referenceNumber}/{newOrderStatus}', [OrderController::class, 'updateOrderStatus']);
 Route::resource('/order-attachment', OrderAttachmentController::class)->only(['store']);
+
+Route::get('/company/{companyId}/department/{departmentId}/suppliers', [SupplierController::class, 'getSuppliersByCompanyAndDepartment']);
 
 Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
 Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
@@ -96,3 +100,4 @@ Route::post('/chats/{chat}/participants', [ChatsController::class, 'addParticipa
     ->middleware('auth:sanctum');
 Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
     ->middleware('auth:sanctum');
+

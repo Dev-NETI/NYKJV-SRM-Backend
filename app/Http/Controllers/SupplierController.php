@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -232,4 +233,33 @@ class SupplierController extends Controller
         }
     }
     
+
+    public function getSuppliersByCompanyAndDepartment($company = 0, $department = 0, Request $request) {
+        try {
+
+            if(!$company && !$department) {
+                return $this->index($request);
+            }
+
+            $suppliers = User::with(['supplier' => function ($query) {
+                                $query->get();
+                            }])
+                            ->where('supplier_id', '>', 0)
+                            ->where(function($query) use ($department, $company){
+                                $query->where('department_id', $department)
+                                ->orWhere('company_id', $company);
+                            })
+                            ->get();
+            return response()->json([
+                'suppliers' => array_map(function ($data) { return $data['supplier']; }, $suppliers->toArray()),
+                'message' => 'Successfully fetched suppliers',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to fethed suppliers',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

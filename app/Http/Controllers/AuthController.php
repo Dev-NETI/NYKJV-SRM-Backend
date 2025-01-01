@@ -14,7 +14,7 @@ class AuthController extends Controller
     public function authenticating(OtpRequest $request)
     {
         $this->temp_otp = $request->input('temp_otp'); // Retrieve 'tempt_otp' from request
-        Mail::to(Auth::user()->email)->send(new MailerLoginOtp(Auth::user()->email, $this->temp_otp));
+        // Mail::to(Auth::user()->email)->send(new MailerLoginOtp(Auth::user()->email, $this->temp_otp));
         Session::put('temp_otp', $this->temp_otp);
         // return response()->json(true, 200);
         return response()->json(['status' =>  'already send otp: ' .  Session::get('temp_otp') . ' to ' . Auth::user()->email], 200);
