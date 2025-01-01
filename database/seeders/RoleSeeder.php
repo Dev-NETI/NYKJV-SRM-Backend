@@ -23,8 +23,14 @@ class RoleSeeder extends Seeder
             ['name' => 'Category', 'url' => 'category', 'is_active' => 1],
             ['name' => 'Brand', 'url' => 'brand', 'is_active' => 1],
             ['name' => 'Product', 'url' => 'product', 'is_active' => 1],
-            ['name' => 'Supplier Document', 'url' => 'supplier-document', 'is_active' => 1],
+            ['name' => 'Supplier Document', 'url' => 'supplier-document/compliance', 'is_active' => 1],
             ['name' => 'User Management', 'url' => 'user-management', 'is_active' => 1],
+            ['name' => 'Orders', 'url' => 'orders', 'is_active' => 1],
+            ['name' => 'Order Documents', 'url' => 'supplier-document/orders', 'is_active' => 1],
+            ['name' => 'Admin', 'url' => 'chat', 'is_active' => 1],
+            ['name' => 'Supplier', 'url' => 'chat', 'is_active' => 1],
+            ['name' => 'User', 'url' => 'chat', 'is_active' => 1],
+            ['name' => 'Supplier Admin', 'url' => 'supplier', 'is_active' => 1],
         ];
 
         foreach ($roles as $role) {
