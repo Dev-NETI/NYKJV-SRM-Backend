@@ -43,6 +43,10 @@ class UserController extends Controller
         if (!$userData) {
             return response()->json(false);
         }
+
+        // Add the unhashed password to the response
+        $userData->unhashed_password = $userData->password;
+
         return response()->json($userData);
     }
 
@@ -103,6 +107,17 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(false);
         }
+
+        // Only hash the password if it's provided in the request
+        if ($request->has('password') && !empty($request->password)) {
+            $request->merge([
+                'password' => Hash::make($request->password)
+            ]);
+        } else {
+            // Remove password from request if it's empty
+            unset($request['password']);
+        }
+
         $user->update($request->all());
         return response()->json(['message' => 'User updated successfully', 'user' => $user], 201);
     }
