@@ -14,14 +14,14 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
+
         $query = Supplier::query();
-    
+        $query->where('is_active', 1);
         if ($request->has('name') && $request->name != '') {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
     
         $suppliers = $query->paginate(10);
-    
         return response()->json([
             'suppliers' => $suppliers->items(),
             'pagination' => [
@@ -155,12 +155,11 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(String $id)
     {
-        // Implement the destroy method if needed
         try {
             $supplier = Supplier::findOrFail($id);
-            $supplier->delete();
+            $supplier->where('id', $id)->update(['is_active' => 0]);
             return response()->json([
                 'message' => 'Successfully deleted supplier',
                 'supplier' => $supplier

@@ -82,7 +82,7 @@ Route::get('/department-supplier/get-per-department/{departmentId}', [Department
 Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
 Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
-Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update','search']);
+Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update', 'search']);
 
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
