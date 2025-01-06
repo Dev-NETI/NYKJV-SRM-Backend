@@ -9,6 +9,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -166,6 +167,25 @@ class ProductController extends Controller
             return response()->json(true);
         } catch (Exception $e) {
             return response()->json(false, 400);
+        }
+    }
+
+    public function total_count()
+    {
+        try {
+            Log::info('Starting total_count method');
+            $total = Products::where('is_active', 1)->count();
+            Log::info('Active products count: ' . $total);
+            return response()->json([
+                'total' => $total,
+                'message' => 'Successfully counted active products',
+            ], 200);
+        } catch (Exception $e) {
+            Log::error('Error in total_count: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error counting products',
+                'error' => $e->getMessage(),
+            ], 500);
         }
     }
 }
