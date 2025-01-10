@@ -47,7 +47,7 @@ class User extends Authenticatable
             $slug = $lastId != NULL ? encrypt($lastId->id + 1) : encrypt(1);
             $model->slug = $slug;
             $model->is_active = 1;
-            $model->modified_by = 'system';
+            $model->modified_by = Auth::user()->full_name;
         });
 
         static::updating(function ($model) {

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Supplier extends Model
 {
@@ -30,11 +31,11 @@ class Supplier extends Model
             $latestId = $model::orderBy('id', 'DESC')->first();
             $slug = $latestId != NULL ? encrypt($latestId->id + 1) : encrypt(1);
             $model->slug = $slug;
-            $model->modified_by = 'system';
+            $model->modified_by = Auth::user()->full_name;
         });
 
         static::updating(function ($model) {
-            $model->modified_by = 'system';
+            $model->modified_by = Auth::user()->full_name;
         });
     }
 
