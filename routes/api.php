@@ -79,11 +79,11 @@ Route::get('/order-document/get-documents/{supplierId}/{departmentId}', [OrderDo
 Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
 Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
 
-Route::resource('/category', CategoriesController::class)->only(['index', 'store','update', 'destroy']);
-Route::resource('/brands', BrandController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
+Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 
 Route::get('/products/total_count', [ProductController::class, 'total_count']);
-Route::resource('/products', ProductController::class)->only(['index', 'store','update', 'destroy']);
+Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
 
 Route::get('/supplier/total_count', [SupplierController::class, 'total_count']);
 Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update', 'search']);
