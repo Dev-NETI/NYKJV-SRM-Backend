@@ -36,7 +36,7 @@ class User extends Authenticatable
     ];
 
     // protected $with = ['role_users', 'roles', 'company', 'department', 'supplier'];
-    protected $with = ['role_users', 'roles'];
+    protected $with = ['role_users', 'roles', 'supplier'];
 
 
     protected static function boot()
