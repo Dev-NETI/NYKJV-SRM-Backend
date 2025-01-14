@@ -92,7 +92,7 @@ class CategoriesController extends Controller
                 Rule::unique('categories', 'name')->ignore((int)$id),
             ],
         ], [
-            'categoryName.unique' => 'The specified " '. $request['categoryName'] .' " name is already in use.',
+            'categoryName.unique' => '" '. $request['categoryName'] .' " name is already in use.',
         ]);
 
         try {

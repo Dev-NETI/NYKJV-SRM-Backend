@@ -121,22 +121,28 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    { 
+    public function update(Request $request, $id)
+    {
+        // Find the product
+        $product = Products::find($id);
+
+        if (!$product) {
+            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
+        }
+
         // Validate the request
         $request->validate([
-            // 'productImage' => 'required|image|mimes:jpeg,png,jpg,svg',
-            'productName' => 'required|string|max:255|unique:products,name,' . $id, // Ignore the current product
+            'productImage' => 'nullable|image|mimes:jpeg,png,jpg,svg|max:2048',
             'productCurrency' => 'required|string',
+            'productName' => 'required|string|max:255|unique:products,name,' . $id,
             'productPrice' => 'required|numeric|min:1',
             'productCategory' => 'required|exists:categories,id',
             'productBrand' => 'required|exists:brands,id',
             'productSpecification' => 'required|string|max:255',
         ], [
-            // 'productImage.required' => '"' . $id . '" Image is required.',
-            // 'productImage.image' => 'Invalid image format.',
-            // 'productImage.mimes' => 'Allowed formats: jpeg, png, jpg, svg.',
-            // 'productImage.max' => 'Image size must not exceed 2MB.',
+            'productImage.image' => 'Invalid image format.',
+            'productImage.mimes' => 'Allowed formats: jpeg, png, jpg, svg.',
+            'productImage.max' => 'Image size must not exceed 2MB.',
             'productName.required' => 'Name is required.',
             'productName.unique' => '"' . $request['productName'] . '" has already been taken.',
             'productPrice.required' => 'Price is required.',
@@ -150,37 +156,41 @@ class ProductController extends Controller
         ]);
 
         try {
-            // Find the product
-            $product = Products::findOrFail($id);
-            
-            // Handle image upload if provided
+            // Handle the image upload if a new image is provided
             if ($request->hasFile('productImage')) {
                 $productImage = $request->file('productImage');
+
+                // Store the image and get the hash name
                 $imagePath = $productImage->storeAs('public/product-image', $productImage->hashName());
 
                 if (!$imagePath) {
                     return response()->json(['success' => false, 'message' => 'Failed to upload the product image.'], 500);
                 }
 
-                // Update the image field
+                // Delete the old image if it exists
+                if ($product->product_image) {
+                    Storage::delete('public/product-image/' . $product->product_image);
+                }
+
+                // Update the product image field
                 $product->product_image = $productImage->hashName();
             }
 
-            // Update the product details
-            $product->update([
-                'category_id' => $request['productCategory'],
-                'brand_id' => $request['productBrand'],
-                'product_image' => 'SW5K6m7SwlK1CYMvnEL91R6P2KAT9tSIQNwsNyfq.png', // Use hash name for the image
-                'name' => $request['productName'],
-                'currency' => $request['productCurrency'],
-                'price' => $request['productPrice'],
-                'specification' => $request['productSpecification'],
-            ]);
+            // Update other product details
+            $product->category_id = $request['productCategory'];
+            $product->brand_id = $request['productBrand'];
+            $product->currency = $request['productCurrency'];
+            $product->price = $request['productPrice'];
+            $product->name = $request['productName'];
+            $product->specification = $request['productSpecification'];
+
+            // Save the updated product
+            if (!$product->save()) {
+                return response()->json(['success' => false, 'message' => 'Failed to update the product.'], 500);
+            }
 
             // Return successful response
             return response()->json(['success' => true, 'message' => 'Product updated successfully.', 'product' => $product], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['success' => false, 'message' => 'Product not found.'], 404);
         } catch (ValidationException $e) {
             // Log validation errors
             Log::error('Validation Error: ', $e->errors());
@@ -191,7 +201,6 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'message' => 'An error occurred. Please try again.'], 500);
         }
     }
-
 
     public function updatePrice($productId, $newPrice)
     {

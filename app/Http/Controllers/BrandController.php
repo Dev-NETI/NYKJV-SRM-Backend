@@ -91,7 +91,7 @@ class BrandController extends Controller
                 Rule::unique('brands', 'name')->ignore((int)$id),
             ],
         ], [
-            'brandName.unique' => 'The specified " '. $request['brandName'] .' " name is already in use.',
+            'brandName.unique' => '" '. $request['brandName'] .' " name is already in use.',
         ]);
 
         try {
