@@ -21,6 +21,7 @@ use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierDocumentController;
 use App\Http\Controllers\UserController;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update']);
         });
         Route::middleware('product_access')->group(function () {
-            Route::resource('/products', ProductController::class)->only(['index', 'store', 'update']);
+            // Route::resource('/products', ProductController::class)->only(['index', 'show', 'store', 'update', 'destroy']);
         });
         Route::middleware('document_access')->group(function () {
             Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
@@ -61,8 +62,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
-Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
-Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
 Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
 Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
@@ -82,8 +81,7 @@ Route::get('/department-supplier/get-per-department/{departmentId}', [Department
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 
-Route::get('/products/total_count', [ProductController::class, 'total_count']);
-Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
+
 
 Route::get('/supplier/total_count', [SupplierController::class, 'total_count']);
 Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update', 'search']);
@@ -99,3 +97,10 @@ Route::post('/chats/{chat}/participants', [ChatsController::class, 'addParticipa
     ->middleware('auth:sanctum');
 Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
     ->middleware('auth:sanctum');
+
+
+Route::get('/products/total_count', [ProductController::class, 'total_count']);
+Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
+Route::get('/products/get-products/{supplierId}', [ProductController::class, 'getProduct']);
+Route::post('/products/update-product', [ProductController::class, 'patchProduct']);
+Route::resource('/products', ProductController::class)->only(['index', 'show', 'store', 'destroy']);
