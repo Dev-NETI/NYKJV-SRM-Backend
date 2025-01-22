@@ -22,6 +22,7 @@ class Products extends Model
         'modified_by',
         'image_path',
         'currency_id',
+        'price_vat_ex',
     ];
 
     protected static function boot()
