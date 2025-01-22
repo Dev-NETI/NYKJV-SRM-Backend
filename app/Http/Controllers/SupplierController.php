@@ -12,26 +12,26 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $suppliers = Supplier::all();
-            return response()->json([
-                'suppliers' => $suppliers,
-                'message' => 'Suppliers fetched successfully',
-            ], 200);
-        } catch (\Exception $e) {
-            Log::error('Error fetching suppliers: ' . $e->getMessage());
-            return response()->json([
-                'message' => 'Failed to fetch suppliers',
-                'error' => $e->getMessage(),
-            ], 500);
+
+        $query = Supplier::query();
+        $query->where('is_active', 1);
+        if ($request->has('name') && $request->name != '') {
+            $query->where('name', 'like', '%' . $request->name . '%');
         }
+
+        $suppliers = $query->paginate(10);
+        return response()->json([
+            'suppliers' => $suppliers->items(),
+            'pagination' => [
+                'current_page' => $suppliers->currentPage(),
+                'total' => $suppliers->total(),
+                'last_page' => $suppliers->lastPage(),
+            ]
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -74,26 +74,21 @@ class SupplierController extends Controller
             ], 500);
         }
     }
-
-
     /**
      * Display the specified resource.
      */
     public function show($id)
     {
         try {
-            $supplier = Supplier::find($id);
-            if (!$supplier) {
-                return response()->json(['message' => 'Supplier not found'], 404);
-            }
-
+            Log::info('Fetching supplier with ID: ' . $id);
+            $supplier = Supplier::findOrFail($id);
             return response()->json($supplier, 200);
         } catch (\Exception $e) {
             Log::error('Error fetching supplier: ' . $e->getMessage());
             return response()->json(['message' => 'Error fetching supplier'], 500);
         }
     }
-
+    
     /**
      * Show the form for editing the specified resource.
      */
@@ -139,7 +134,7 @@ class SupplierController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         } catch (\Exception $e) {
             Log::error('Error fetching supplier for update: ' . $e->getMessage());
-            return response()->json(['message' => 'Supplier not found'], 404);
+            return response()->json(['message' => 'Supplier not found from update'], 404);
         }
 
         Log::info('Updating supplier', ['id' => $id, 'data' => $validatedData]);
@@ -151,12 +146,11 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(String $id)
     {
-        // Implement the destroy method if needed
         try {
             $supplier = Supplier::findOrFail($id);
-            $supplier->delete();
+            $supplier->where('id', $id)->update(['is_active' => 0]);
             return response()->json([
                 'message' => 'Successfully deleted supplier',
                 'supplier' => $supplier
@@ -164,12 +158,11 @@ class SupplierController extends Controller
         } catch (\Exception $e) {
             Log::error('Error deleting supplier' . $e->getMessage());
             return response()->json([
-                'message' => 'Supplier not found',
+                'message' => 'Supplier not found from destroy',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
-
     public function fetch_update(string $id)
     {
         try {
@@ -186,4 +179,63 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+    public function search(Request $request)
+    {
+        try {
+            // Get search query parameters
+            $name = $request->input('name');
+            $perPage = $request->input('per_page', 10);  // Allow users to specify per page
+
+            // Validate the name parameter (if provided)
+            if (!is_string($name) || empty($name)) {
+                return response()->json([
+                    'message' => 'Invalid or missing search term',
+                    'suppliers' => [],
+                ], 400);  // Return bad request if the name is not a valid string
+            }
+
+            // Sanitize the search term to escape special characters for LIKE query
+            $sanitizedSearchTerm = addcslashes($name, '%_'); // Escape % and _
+
+            // Search for suppliers with the sanitized name using a "like" query
+            $suppliers = Supplier::where('name', 'like', '%' . $sanitizedSearchTerm . '%')
+                ->paginate($perPage);
+
+            return response()->json([
+                'message' => 'Search results fetched successfully',
+                'suppliers' => $suppliers->items(),
+                'pagination' => [
+                    'current_page' => $suppliers->currentPage(),
+                    'last_page' => $suppliers->lastPage(),
+                    'total' => $suppliers->total(),
+                    'per_page' => $suppliers->perPage(),
+                ],
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error searching suppliers: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error searching suppliers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    public function total_count()
+    {
+        try {
+            Log::info('Starting total_count method');
+            $total = Supplier::where('is_active', 1)->count();
+            Log::info('Active suppliers count: ' . $total);
+            return response()->json([
+                'total' => $total,
+                'message' => 'Successfully counted active suppliers',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error in total_count: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error counting suppliers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
 }
