@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
+
     Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
@@ -60,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
 });
+Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
