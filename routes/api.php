@@ -81,8 +81,8 @@ Route::get('/department-supplier/get-per-department/{departmentId}', [Department
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 
-//get the departments for the supplier
-Route::get('/supplier/departments', [SupplierController::class, 'fetch_departments']);
+
+
 Route::get('/supplier/total_count', [SupplierController::class, 'total_count']);
 Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update', 'search']);
 
