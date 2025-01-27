@@ -14,15 +14,17 @@ class CategoriesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $category_data = Category::where('is_active', 1)->get();
-
+        $category_data = Category::where('is_active', 1)
+            ->where('department_id', $request->department_id) // filter by parent category ID
+            ->get();
+    
         if (!$category_data){
             return response()->json(false);
         }
-
-        return response()->json($category_data);
+    
+        return response()->json(['category_data' => $category_data, 'department_id' => $request->department_id]);
     }
 
     /**
@@ -34,21 +36,25 @@ class CategoriesController extends Controller
             // Validate the request with custom error messages
             $request->validate([
                 'categoryName' => 'required|string|max:255|unique:categories,name',
+                'departmentId' => 'required|int',
             ], [
                 'categoryName.required' => 'The category name field is required.',
                 'categoryName.string' => 'The category name must be a valid string.',
                 'categoryName.max' => 'The category name may not be greater than 255 characters.',
-                'categoryName.unique' => '" '. $request['categoryName'] .' " has already been taken.',
+                'categoryName.unique' => 'The category name "' . $request['categoryName'] . '" has already been taken.',
+                'departmentId.required' => 'The department ID is required.',
+                'departmentId.int' => 'The department ID must be a valid number.',
             ]);
         
             // Create the category
             $category = Category::create([
                 'name' => $request['categoryName'],
+                'department_id' => $request['departmentId'],
             ]);
         
             // Check if the creation was successful
             if (!$category) {
-                return response()->json(['success' => false, 'message' => 'Failed to create the category.']);
+                return response()->json(['success' => false, 'message' => 'Failed to create the category.'], 500);
             }
         
             return response()->json(['success' => true, 'message' => 'Category created successfully.']);
@@ -58,8 +64,11 @@ class CategoriesController extends Controller
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
         
         } catch (Exception $e) {
+            // Log the exception for debugging
+            \Log::error($e->getMessage());
+            
             // Return a general error response
-            return response()->json(['success' => false, 'message' => 'An error occurred. Please try again.']);
+            return response()->json(['success' => false, 'message' => 'An error occurred. Please try again.'], 500);
         }      
     }
 

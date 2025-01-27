@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 class Category extends Model
 {
     use HasFactory;
-    protected $fillable = ['slug', 'name', 'is_active', 'modified_by'];
+    protected $fillable = ['slug', 'name','department_id', 'is_active', 'modified_by'];
     protected static function boot()
     {
         parent::boot();
