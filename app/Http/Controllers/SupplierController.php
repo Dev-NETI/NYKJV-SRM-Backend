@@ -88,7 +88,7 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Error fetching supplier'], 500);
         }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -237,5 +237,4 @@ class SupplierController extends Controller
             ], 500);
         }
     }
-    
 }

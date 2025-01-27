@@ -19,7 +19,10 @@ class Products extends Model
         'price',
         'specification',
         'is_active',
-        'modified_by'
+        'modified_by',
+        'image_path',
+        'currency_id',
+        'price_vat_ex',
     ];
 
     protected static function boot()
@@ -32,7 +35,8 @@ class Products extends Model
         });
 
         static::updating(function ($model) {
-            $model->modified_by = Auth::user()->full_name;
+            // $model->modified_by = Auth::user()->full_name;
+            $model->modified_by = "test";
         });
     }
 

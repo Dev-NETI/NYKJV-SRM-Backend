@@ -21,6 +21,7 @@ use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierDocumentController;
 use App\Http\Controllers\UserController;
+use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,12 +47,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('product_access')->group(function () {
             Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
             Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
+            Route::get('/products/total_count', [ProductController::class, 'total_count']);
+            Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
+            Route::get('/products/get-products/{supplierId}', [ProductController::class, 'getProduct']);
+            Route::post('/products/update-product', [ProductController::class, 'patchProduct']);
         });
         Route::middleware('document_access')->group(function () {
             Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
         });
     });
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
+
     Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
     Route::resource('/department', DepartmentController::class)->only(['index']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
@@ -59,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles/available-roles/{id}', [RoleController::class, 'availableRoles']);
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
+
 
     //Supplier Document
     Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
@@ -76,8 +83,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
     Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
     Route::get('/products/total_count', [ProductController::class, 'total_count']);
-
-
+  
+    Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
     Route::apiResource('/chats', ChatsController::class);
     Route::apiResource('/messages', MessagesController::class);
     Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
@@ -86,4 +93,9 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('auth:sanctum');
     Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
         ->middleware('auth:sanctum');
+  
+    Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
+    Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
+
 });
