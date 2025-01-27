@@ -51,7 +51,7 @@ class CategorySeeder extends Seeder
                 'slug' => encrypt($key + 1), // Encrypting unique numeric ID
                 'name' => $category,
                 'is_active' => true,
-                'modified_by' => 'Seeder',
+                'modified_by' => 'NOC',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
