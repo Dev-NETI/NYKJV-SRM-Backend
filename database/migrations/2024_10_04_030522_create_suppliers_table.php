@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('slug')->nullable();
             $table->text('name')->nullable();
+            $table->text('departments')->nullable();
             $table->text('island')->nullable();
             $table->unsignedBigInteger('region_id')->nullable();
             $table->unsignedBigInteger('province_id')->nullable();
