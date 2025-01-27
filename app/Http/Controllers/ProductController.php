@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Products::where('is_active', 1)->with(['category', 'brand', 'supplier'])->get();
+        $products = Products::where('is_active', 1)->with(['category', 'brand'])->get();
         return response()->json($products);
     }
 
@@ -50,10 +50,11 @@ class ProductController extends Controller
             // Validate the request with custom error messages
             $request->validate([
                 'productName' => 'required|string|max:255|unique:products,name',
-                'productPrice' => 'required|numeric',
+                'productPrice' => 'required|numeric|min:1',
                 'productCategory' => 'required',
                 'productBrand' => 'required',
                 'productSpecification' => 'required|string|max:255',
+                'fileImage' => 'required|file|image|max:2048',
                 'currencyId' => 'required'
             ], [
                 'productName.required' => 'The product name field is required.',
@@ -62,34 +63,31 @@ class ProductController extends Controller
                 'productName.unique' => '" ' . $request['productName'] . ' " has already been taken.',
                 'productPrice.required' => 'The product price is required.',
                 'productPrice.numeric' => 'The product price must be a number.',
+                'productPrice.min' => 'The product price must be at least 1.',
                 'productCategory.required' => 'The product category is required.',
                 'productBrand.required' => 'The product brand is required.',
                 'productSpecification.required' => 'The product specification is required.',
             ]);
 
-            $storeData = [
+            $image = $request->file('fileImage');
+            $storeImage = $image->storeAs('public/products', $image->hashName());
+
+            if (!$storeImage) {
+                return response()->json(['response' => false, 'message' => 'Failed to save product image!.']);
+            }
+
+            // Create the product
+            $product = Products::create([
                 'category_id' => $request['productCategory'],
                 'brand_id' => $request['productBrand'],
                 'price' => $request['productPrice'],
                 'price_vat_ex' => $request['productPriceVatEx'],
                 'name' => $request['productName'],
                 'specification' => $request['productSpecification'],
+                'image_path' => $image->hashName(),
                 'currency_id' => $request['currencyId'],
                 'supplier_id' => $request['supplierId'],
-            ];
-
-            if ($request->file('fileImage')) {
-                $image = $request->file('fileImage');
-                $storeImage = $image->storeAs('public/products', $image->hashName());
-
-                if (!$storeImage) {
-                    return response()->json(['response' => false, 'message' => 'Failed to save product image!.']);
-                }
-                $storeData['image_path'] = $image->hashName();
-            }
-
-            // Create the product
-            $product = Products::create($storeData);
+            ]);
 
             // Check if the creation was successful
             if (!$product) {
