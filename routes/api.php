@@ -66,7 +66,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
 
-
     //Supplier Document
     Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
     Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
@@ -83,7 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
     Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
     Route::get('/products/total_count', [ProductController::class, 'total_count']);
-  
+
     Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
     Route::apiResource('/chats', ChatsController::class);
     Route::apiResource('/messages', MessagesController::class);
@@ -93,9 +92,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('auth:sanctum');
     Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
         ->middleware('auth:sanctum');
-  
-    Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
-    Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
-    Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
 
+    Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
 });
