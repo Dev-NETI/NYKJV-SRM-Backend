@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Products::where('is_active', 1)->with(['category', 'brand'])->get();
+        $products = Products::where('is_active', 1)->with(['category', 'brand', 'supplier'])->get();
         return response()->json($products);
     }
 

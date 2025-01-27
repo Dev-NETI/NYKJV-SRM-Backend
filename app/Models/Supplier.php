@@ -63,4 +63,9 @@ class Supplier extends Model
     {
         return $this->hasMany(OrderDocument::class, 'supplier_id');
     }
+
+    public function product()
+    {
+        return $this->hasMany(Products::class, 'supplier_id');
+    }
 }
