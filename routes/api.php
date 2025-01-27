@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
         });
         Route::middleware('product_access')->group(function () {
-            Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'destroy']);
+            Route::resource('/products', ProductController::class)->only(['index', 'store', 'update', 'show', 'destroy']);
             Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
             Route::get('/products/total_count', [ProductController::class, 'total_count']);
             Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
