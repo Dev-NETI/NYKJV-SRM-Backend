@@ -67,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
 
     //Supplier Document
+    Route::get('/company/{companyId}/department/{departmentId}/suppliers', [SupplierController::class, 'getSuppliersByCompanyAndDepartment']);
     Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
     Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
     Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
