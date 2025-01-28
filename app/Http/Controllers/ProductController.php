@@ -18,7 +18,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Products::where('is_active', 1)->with(['category', 'brand', 'supplier'])->get();
+        $products = Products::where('is_active', 1)->with(['category', 'brand'])->get();
         return response()->json($products);
     }
 
@@ -26,9 +26,9 @@ class ProductController extends Controller
     {
         try {
             if ($supplierId === 'null') {
-                $query = Products::with(['category', 'brand'])->where('is_active', 1);
+                $query = Products::with(['category', 'brand', 'supplier'])->where('is_active', 1);
             } else {
-                $query = Products::with(['category', 'brand'])->where('is_active', 1)->where('supplier_id', $supplierId);
+                $query = Products::with(['category', 'brand', 'supplier'])->where('is_active', 1)->where('supplier_id', $supplierId);
             }
             $productData = $query->get();
 
