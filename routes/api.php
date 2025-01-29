@@ -59,9 +59,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
 
     Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
-    Route::resource('/department', DepartmentController::class)->only(['index']);
+    Route::get('/department/get-all-department', [DepartmentController::class, 'getAllDepartment']);
+    Route::post('/department/handle-activation', [DepartmentController::class, 'handleActivation']);
+    Route::post('/department/update-department', [DepartmentController::class, 'updateDepartment']);
+    Route::resource('/department', DepartmentController::class)->only(['index', 'store']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
-    Route::resource('/supplier', SupplierController::class)->only(['store', 'index', 'show', 'edit', 'update', 'delete']);
+
     Route::get('/roles/available-roles/{id}', [RoleController::class, 'availableRoles']);
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
@@ -95,3 +98,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
 });
+
+Route::resource('/supplier', SupplierController::class)->only(['store', 'index', 'show', 'edit', 'update', 'delete']);
