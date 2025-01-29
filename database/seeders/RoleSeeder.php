@@ -31,6 +31,7 @@ class RoleSeeder extends Seeder
             ['name' => 'Supplier', 'url' => 'chat', 'is_active' => 1],
             ['name' => 'User', 'url' => 'chat', 'is_active' => 1],
             ['name' => 'Supplier Admin', 'url' => 'supplier', 'is_active' => 1],
+            ['name' => 'Department', 'url' => 'department', 'is_active' => 1],
         ];
 
         foreach ($roles as $role) {

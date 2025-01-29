@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use Exception;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -12,60 +13,86 @@ class DepartmentController extends Controller
      */
     public function index()
     {
-        $department = Department::where('is_active', 1)->get();
+        try {
+            $department = Department::with(['company'])
+                ->where('is_active', 1)
+                ->orderBy('name', 'asc')
+                ->get();
 
-        if ($department->isEmpty()) {
-            return response()->json(['message' => 'No data found'], 404);
+            if ($department->isEmpty()) {
+                return response()->json(['message' => 'No data found'], 404);
+            }
+
+            return response()->json($department, 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         }
-
-        return response()->json($department, 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'companyId' => 'required',
+            'departmentName' => 'required',
+
+        ]);
+        try {
+            Department::create([
+                'company_id' => $request['companyId'],
+                'name' => $request['departmentName']
+            ]);
+
+            return response()->json(['response' => true, 'message' => 'Department created successfully!'], 200);
+        } catch (Exception $e) {
+            return response()->json(['response' => false, 'message' => $e->getMessage()], 400);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function getAllDepartment()
     {
-        //
+        try {
+            $department = Department::with(['company'])
+                ->orderBy('name', 'asc')
+                ->get();
+
+            if ($department->isEmpty()) {
+                return response()->json(['message' => 'No data found'], 404);
+            }
+
+            return response()->json($department, 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function updateDepartment(Request $request)
     {
-        //
+        try {
+            $departmentData = Department::where('id', $request['departmentId'])->first();
+
+            $departmentData->update([
+                'company_id' => $request['companyId'],
+                'name' => $request['name']
+            ]);
+
+            return response()->json(['response' => true, 'message' => 'Department updated successfully!'], 200);
+        } catch (Exception $e) {
+            return response()->json(['response' => false, 'message' => $e->getMessage()], 400);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function handleActivation(Request $request)
     {
-        //
-    }
+        try {
+            $departmentData = Department::where('id', $request['departmentId'])->first();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+            $departmentData->update([
+                'is_active' => $request['isActive'],
+            ]);
+
+            return response()->json(['response' => true, 'message' => 'Department updated successfully!'], 200);
+        } catch (Exception $e) {
+            return response()->json(['response' => false, 'message' => $e->getMessage()], 400);
+        }
     }
 }
