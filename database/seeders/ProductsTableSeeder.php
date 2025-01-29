@@ -16,16 +16,16 @@ class ProductsTableSeeder extends Seeder
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         Products::truncate();
-        
+
         for ($i = 1; $i <= 300; $i++) {
             DB::table('products')->insert([
                 'slug' => encrypt($i),
-                'supplier_id' => rand(1, 20),  
-                'category_id' => rand(1, 3),  
-                'brand_id' => rand(1, 4),     
-                'name' => 'Product '.$i,
-                'price' => rand(100, 1000),  
-                'specification' => 'Specification details for Product '.$i,
+                'supplier_id' => rand(1, 20),
+                'category_id' => rand(1, 3),
+                'brand_id' => rand(1, 4),
+                'name' => fake()->name(),
+                'price' => rand(100, 1000),
+                'specification' => fake()->paragraph(),
                 'is_active' => true,
                 'modified_by' => 'Seeder Script',
                 'created_at' => now(),
