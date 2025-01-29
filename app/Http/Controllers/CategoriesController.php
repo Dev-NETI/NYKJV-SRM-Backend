@@ -16,15 +16,31 @@ class CategoriesController extends Controller
      */
     public function index(Request $request)
     {
-        $category_data = Category::where('is_active', 1)
-            ->where('department_id', $request->department_id) // filter by parent category ID
-            ->get();
-    
-        if (!$category_data){
+        // Retrieve active categories
+        $category_data = Category::where('is_active', 1);
+
+        // Apply department filter if provided
+        if ($request->department_id) {
+            $category_data = $category_data->where('department_id', $request->department_id);
+        }
+
+        // Fetch the data
+        $category_data = $category_data->get();
+
+        // Check if any categories were found
+        if ($category_data->isEmpty()) {
             return response()->json(false);
         }
-    
-        return response()->json(['category_data' => $category_data, 'department_id' => $request->department_id]);
+
+        // Return response with or without department_id
+        if ($request->has('department_id')) {
+            return response()->json([
+                'category_data' => $category_data,
+                'department_id' => $request->department_id,
+            ]);
+        } else {
+            return response()->json($category_data);
+        }
     }
 
     /**
