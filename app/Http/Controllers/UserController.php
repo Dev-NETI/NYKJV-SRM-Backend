@@ -132,4 +132,38 @@ class UserController extends Controller
         $user->save();
         return response()->json(['message' => 'User deleted successfully', 'user' => $user], 201);
     }
+
+    public function updateProfile(Request $request)
+    {
+        try {
+            $userData = User::findOrFail($request['userId']);
+
+            if (!$userData) {
+                return response()->json(['response' => false, 'message' => 'Profile do not exist!'], 400);
+            }
+
+            $updateData = [
+                'f_name' => $request['firstname'],
+                'm_name' => $request['middlename'],
+                'l_name' => $request['lastname'],
+                'suffix' => $request['suffix'],
+                'contact_number' => $request['contactNumber'],
+                'email' => $request['email'],
+            ];
+
+            if ($request['password'] != "") {
+                $updateData['password'] = Hash::make($request['password']);
+            }
+
+            $update = $userData->update($updateData);
+
+            if (!$update) {
+                return response()->json(['response' => false, 'message' => 'Updating profile failed!'], 400);
+            }
+
+            return response()->json(['response' => true, 'message' => 'Profile updated successfully!'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['response' => false, 'message' => $e->getMessage()], 400);
+        }
+    }
 }
