@@ -16,6 +16,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDocumentController;
 use App\Http\Controllers\OrderDocumentTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegisterCodeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
@@ -86,4 +87,8 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('auth:sanctum');
     Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
         ->middleware('auth:sanctum');
+    Route::post('/register-code/generate', [RegisterCodeController::class, 'generateCode']);
 });
+
+Route::post('/register-code/check', [RegisterCodeController::class, 'checkCode']);
+Route::post('/register-code/use', [RegisterCodeController::class, 'useCode']);
