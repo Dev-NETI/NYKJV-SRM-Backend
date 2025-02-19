@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
+use App\Models\Department;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -32,14 +34,35 @@ class SupplierController extends Controller
         ]);
     }
 
+    public function fetch_departments()
+    {
+        try {
+            $departments = Department::query()
+                ->select('id', 'name') // Select only id and name
+                ->get();
+            Log::info('Fetching departments ' . $departments);
+            return response()->json([
+                'departments' => $departments,
+                'message' => 'Departments fetched successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error fetching departments',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
+
     public function store(Request $request)
     {
         try {
             Log::info('Incoming request data:', $request->all());
-
+    
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
+                'departments' => 'required|string|max:255', 
                 'island' => 'required|string',
                 'region_id' => 'required|integer',
                 'province_id' => 'nullable|integer',
@@ -49,15 +72,19 @@ class SupplierController extends Controller
                 'brgy_id' => 'required|integer',
                 'street_address' => 'required|string|max:255',
             ]);
-
+    
             $validatedData['modified_by'] = $request->user()->name;
-
+    
             // Create a new supplier
             $supplier = Supplier::create($validatedData);
-
+    
+            // Optionally include departments if it's part of the Supplier model
+            $supplier->departments = $validatedData['departments'];
+    
             return response()->json([
                 'message' => 'Supplier Created Successfully',
-                'supplier' => $supplier
+                'supplier' => $supplier,
+                'departments' => $validatedData['departments'], // Add departments explicitly
             ], 201);
         } catch (ValidationException $e) {
             // Log validation errors
@@ -74,6 +101,7 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+    
     /**
      * Display the specified resource.
      */
@@ -116,10 +144,10 @@ class SupplierController extends Controller
     {
         try {
             $supplier = Supplier::findOrFail($id);
-
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
+                'departments' => 'required|string|max:255', 
                 'island' => 'required|string',
                 'region_id' => 'required|integer',
                 'province_id' => 'nullable|integer',
@@ -163,6 +191,7 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+
     public function fetch_update(string $id)
     {
         try {
@@ -219,6 +248,7 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+
     public function total_count()
     {
         try {
@@ -234,6 +264,35 @@ class SupplierController extends Controller
             return response()->json([
                 'message' => 'Error counting suppliers',
                 'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getSuppliersByCompanyAndDepartment($company = 0, $department = 0, Request $request) {
+        try {
+
+            if(!$company && !$department) {
+                return $this->index($request);
+            }
+
+            $suppliers = User::with(['supplier' => function ($query) {
+                                $query->get();
+                            }])
+                            ->where('supplier_id', '>', 0)
+                            ->where(function($query) use ($department, $company){
+                                $query->where('department_id', $department)
+                                ->orWhere('company_id', $company);
+                            })
+                            ->get();
+            return response()->json([
+                'suppliers' => array_map(function ($data) { return $data['supplier']; }, $suppliers->toArray()),
+                'message' => 'Successfully fetched suppliers',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to fethed suppliers',
+                'error' => $e->getMessage()
             ], 500);
         }
     }

@@ -12,6 +12,7 @@ class Supplier extends Model
     protected $fillable = [
         'slug',
         'name',
+        'departments',
         'island',
         'region_id',
         'province_id',
@@ -62,5 +63,10 @@ class Supplier extends Model
     public function order_document()
     {
         return $this->hasMany(OrderDocument::class, 'supplier_id');
+    }
+
+    public function product()
+    {
+        return $this->hasMany(Products::class, 'supplier_id');
     }
 }
