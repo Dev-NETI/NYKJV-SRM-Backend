@@ -16,6 +16,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDocumentController;
 use App\Http\Controllers\OrderDocumentTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegisterCodeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
@@ -96,8 +97,12 @@ Route::middleware('auth:sanctum')->group(function () {
         ->middleware('auth:sanctum');
     Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
         ->middleware('auth:sanctum');
-
     Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
+    Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('/register-code/generate', [RegisterCodeController::class, 'generateCode']);
 });
 
+Route::post('/register-code/check', [RegisterCodeController::class, 'checkCode']);
+Route::post('/register-code/use', [RegisterCodeController::class, 'useCode']);
 Route::resource('/supplier', SupplierController::class)->only(['store', 'index', 'show', 'edit', 'update', 'delete']);
