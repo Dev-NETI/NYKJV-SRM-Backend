@@ -53,12 +53,33 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::resource('/users-management', UserController::class)->only(['index', 'store', 'show', 'update']);
     Route::patch('/users-management/soft-delete/{slug}', [UserController::class, 'softDelete']);
-    Route::resource('/department', DepartmentController::class)->only(['index']);
+    Route::get('/department/get-all-department', [DepartmentController::class, 'getAllDepartment']);
+    Route::post('/department/handle-activation', [DepartmentController::class, 'handleActivation']);
+    Route::post('/department/update-department', [DepartmentController::class, 'updateDepartment']);
+    Route::resource('/department', DepartmentController::class)->only(['index', 'store']);
     Route::resource('/companies', CompanyController::class)->only(['index']);
-    Route::resource('/supplier', SupplierController::class)->only(['store', 'index']);
+
     Route::get('/roles/available-roles/{id}', [RoleController::class, 'availableRoles']);
     Route::resource('/roles-user', RoleUserController::class)->only(['store', 'destroy']);
     Route::get('/roles-user/current-user-roles/{id}', [RoleUserController::class, 'currentUserRoles']);
+
+    //Supplier Document
+    Route::get('/company/{companyId}/department/{departmentId}/suppliers', [SupplierController::class, 'getSuppliersByCompanyAndDepartment']);
+    Route::patch('/supplier-document/trash/{id}', [SupplierDocumentController::class, 'moveToTrash']);
+    Route::patch('/supplier-document/recycle/{id}', [SupplierDocumentController::class, 'recycleDocument']);
+    Route::get('/supplier-document/show-documents/{supplierId}/{isActive}', [SupplierDocumentController::class, 'showDocuments']);
+    Route::resource('/supplier-document', SupplierDocumentController::class)->only(['store', 'destroy']);
+    Route::post('/order/send-quotation', [OrderController::class, 'sendQuotation']);
+    Route::get('/order/show-order-by-status/{orderStatusId}/{supplierId}', [OrderController::class, 'showOrderByStatus']);
+    Route::get('/order/show-order-items/{referenceNumber}', [OrderController::class, 'showOrderItems']);
+    Route::patch('/order/update-order-status/{referenceNumber}/{newOrderStatus}', [OrderController::class, 'updateOrderStatus']);
+    Route::resource('/order-attachment', OrderAttachmentController::class)->only(['store']);
+    Route::get('/supplier-document/show-documents-by-category/{supplierId}/{categoryId}/{isActive}', [SupplierDocumentController::class, 'showDocumentsByCategory']);
+    Route::get('/supplier-document/missing-documents/{supplierId}/{categoryId}', [SupplierDocumentController::class, 'showMissingDocuments']);
+    Route::get('/order-document/get-documents/{supplierId}/{departmentId}', [OrderDocumentController::class, 'showOrderDocument']);
+    Route::resource('/order-document-type', OrderDocumentTypeController::class)->only(['index']);
+    Route::get('/department-supplier/get-per-department/{departmentId}', [DepartmentSupplierController::class, 'showSupplierPerDepartment']);
+    Route::get('/products/total_count', [ProductController::class, 'total_count']);
 });
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -98,6 +119,10 @@ Route::post('/chats/{chat}/participants', [ChatsController::class, 'addParticipa
 Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
     ->middleware('auth:sanctum');
 
+    Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
+});
+
+Route::resource('/supplier', SupplierController::class)->only(['store', 'index', 'show', 'edit', 'update', 'delete']);
 
 Route::get('/products/total_count', [ProductController::class, 'total_count']);
 Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController::class, 'updatePrice']);
