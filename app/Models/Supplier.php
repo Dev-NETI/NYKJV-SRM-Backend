@@ -12,6 +12,7 @@ class Supplier extends Model
     protected $fillable = [
         'slug',
         'name',
+        'departments',
         'island',
         'region_id',
         'province_id',
