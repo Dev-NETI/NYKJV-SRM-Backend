@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+use Throwable;
 
 class BrandController extends Controller
 {
@@ -17,7 +18,7 @@ class BrandController extends Controller
     public function index()
     {
         $brand_data = Brand::where('is_active', 1)->get();
-        if (!$brand_data){
+        if (!$brand_data) {
             return response()->json(false);
         }
 
@@ -37,29 +38,27 @@ class BrandController extends Controller
                 'brandName.required' => 'The brand name field is required.',
                 'brandName.string' => 'The brand name must be a valid string.',
                 'brandName.max' => 'The brand name may not be greater than 255 characters.',
-                'brandName.unique' => '" '. $request['brandName'] .' " has already been taken.',
+                'brandName.unique' => '" ' . $request['brandName'] . ' " has already been taken.',
             ]);
-        
+
             // Create the brand
             $Brand = Brand::create([
                 'name' => $request['brandName'],
             ]);
-        
+
             // Check if the creation was successful
             if (!$Brand) {
                 return response()->json(['success' => false, 'message' => 'Failed to create the brand.']);
             }
-        
+
             return response()->json(['success' => true, 'message' => 'Brand created successfully.']);
-        
         } catch (ValidationException $e) {
             // Return validation error messages
             return response()->json(['success' => false, 'errors' => $e->errors()], 422);
-        
         } catch (Exception $e) {
             // Return a general error response
             return response()->json(['success' => false, 'message' => 'An error occurred. Please try again.']);
-        }        
+        }
     }
 
     /**
@@ -81,30 +80,22 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-     public function update(Request $request, string $id)
-     {
-        $validatedData = $request->validate([
-            'brandName' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('brands', 'name')->ignore((int)$id),
-            ],
-        ], [
-            'brandName.unique' => 'The specified " '. $request['brandName'] .' " name is already in use.',
-        ]);
-
+    public function update(Request $request, string $id)
+    {
         try {
+            $request->validate([
+                'brandName' => 'required'
+            ]);
             $brand = Brand::findOrFail($id);
             $brand->update([
-                'name' => $request->input('brandName'),
+                'name' => $request['brandName'],
             ]);
 
             return response()->json(true);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return response()->json(false, 400);
         }
-     }
+    }
 
     /**
      * Remove the specified resource from storage.
