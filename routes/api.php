@@ -17,6 +17,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDocumentController;
 use App\Http\Controllers\OrderDocumentTypeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RegisterCodeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\SupplierController;
@@ -93,6 +94,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/total_count', [ProductController::class, 'total_count']);
 });
 
+
+    Route::resource('/document-type', DocumentTypeController::class)->only(['index']);
+    Route::apiResource('/chats', ChatsController::class);
+    Route::apiResource('/messages', MessagesController::class);
+    Route::post('/messages/mark-read', [MessagesController::class, 'markAsRead']);
+    Route::get('/chat/users', [ChatsController::class, 'users']);
+    Route::post('/chats/{chat}/participants', [ChatsController::class, 'addParticipant'])
+        ->middleware('auth:sanctum');
+    Route::delete('/chats/{chat}/participants/{user}', [ChatsController::class, 'removeParticipant'])
+        ->middleware('auth:sanctum');
+    Route::post('/users-management/update-profile', [UserController::class, 'updateProfile']);
+    Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::post('/register-code/generate', [RegisterCodeController::class, 'generateCode']);
+
+
+Route::post('/register-code/check', [RegisterCodeController::class, 'checkCode']);
+Route::post('/register-code/use', [RegisterCodeController::class, 'useCode']);
+Route::resource('/supplier', SupplierController::class)->only(['store', 'index', 'show', 'edit', 'update', 'delete']);
+
 // Public Routes
 Route::resource('/category', CategoriesController::class)->only(['index', 'store', 'update', 'destroy']);
 Route::resource('/brands', BrandController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -117,3 +138,4 @@ Route::patch('/products/update-price/{productId}/{newPrice}', [ProductController
 Route::get('/products/get-products/{supplierId}', [ProductController::class, 'getProduct']);
 Route::post('/products/update-product', [ProductController::class, 'patchProduct']);
 Route::resource('/products', ProductController::class)->only(['index', 'show', 'store', 'destroy']);
+
