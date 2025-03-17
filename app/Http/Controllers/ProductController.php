@@ -50,10 +50,11 @@ class ProductController extends Controller
             // Validate the request with custom error messages
             $request->validate([
                 'productName' => 'required|string|max:255|unique:products,name',
-                'productPrice' => 'required|numeric',
+                'productPrice' => 'nullable|numeric|min:1',
                 'productCategory' => 'required',
                 'productBrand' => 'required',
                 'productSpecification' => 'required|string|max:255',
+                'fileImage' => 'nullable|file|image|max:2048',
                 'currencyId' => 'required'
             ], [
                 'productName.required' => 'The product name field is required.',
@@ -62,34 +63,39 @@ class ProductController extends Controller
                 'productName.unique' => '" ' . $request['productName'] . ' " has already been taken.',
                 'productPrice.required' => 'The product price is required.',
                 'productPrice.numeric' => 'The product price must be a number.',
+                'productPrice.min' => 'The product price must be at least 1.',
                 'productCategory.required' => 'The product category is required.',
                 'productBrand.required' => 'The product brand is required.',
                 'productSpecification.required' => 'The product specification is required.',
             ]);
 
-            $storeData = [
+            // Initialize image path as null
+            $imagePath = null;
+
+            // Handle image upload if provided
+            if ($request->hasFile('fileImage')) {
+                $image = $request->file('fileImage');
+                $imagePath = $image->storeAs('public/products', $image->hashName());
+
+                if (!$imagePath) {
+                    return response()->json(['response' => false, 'message' => 'Failed to save product image!']);
+                }
+                // Convert storage path to filename only
+                $imagePath = $image->hashName();
+            }
+
+            // Create the product
+            $product = Products::create([
                 'category_id' => $request['productCategory'],
                 'brand_id' => $request['productBrand'],
                 'price' => $request['productPrice'],
                 'price_vat_ex' => $request['productPriceVatEx'],
                 'name' => $request['productName'],
                 'specification' => $request['productSpecification'],
+                'image_path' => $imagePath, // Will be null if no image was uploaded
                 'currency_id' => $request['currencyId'],
                 'supplier_id' => $request['supplierId'],
-            ];
-
-            if ($request->file('fileImage')) {
-                $image = $request->file('fileImage');
-                $storeImage = $image->storeAs('public/products', $image->hashName());
-
-                if (!$storeImage) {
-                    return response()->json(['response' => false, 'message' => 'Failed to save product image!.']);
-                }
-                $storeData['image_path'] = $image->hashName();
-            }
-
-            // Create the product
-            $product = Products::create($storeData);
+            ]);
 
             // Check if the creation was successful
             if (!$product) {
@@ -99,7 +105,7 @@ class ProductController extends Controller
             return response()->json(['response' => true, 'message' => 'Product created successfully!']);
         } catch (ValidationException $e) {
             // Return validation error messages
-            return response()->json(['response' => false, 'message' => $e->getMessage()], 422);
+            return response()->json(['response' => false, 'message' => $e->validator->errors()], 422);
         } catch (Exception $e) {
             // Return a general error response
             return response()->json(['response' => false, 'message' => $e->getMessage()]);
@@ -109,8 +115,23 @@ class ProductController extends Controller
     public function patchProduct(Request $request)
     {
         try {
+            $request->validate([
+                'productName' => 'required|string|max:255|unique:products,name',
+                'productPrice' => 'nullable|numeric|min:1',
+                'productCategory' => 'required',
+                'productBrand' => 'required',
+                'productSpecification' => 'required|string|max:255',
+                'fileImage' => 'nullable|file|image|max:2048',
+                'currencyId' => 'required'
+            ]);
+            // Find the product
             $product = Products::where('id', $request['productId'])->first();
 
+            if (!$product) {
+                return response()->json(['response' => false, 'message' => 'Product not found!'], 404);
+            }
+
+            // Prepare base update data
             $updateData = [
                 'category_id' => $request['productCategory'],
                 'brand_id' => $request['productBrand'],
@@ -121,17 +142,20 @@ class ProductController extends Controller
                 'currency_id' => (int)$request['currencyId'],
             ];
 
-            if ($request->file('fileImage')) {
+            // Handle image upload if provided
+            if ($request->hasFile('fileImage')) {
                 $image = $request->file('fileImage');
-                $updateImage = $image->storeAs('public/products', $image->hashName());
+                $imagePath = $image->storeAs('public/products', $image->hashName());
 
-                if (!$updateImage) {
-                    return response()->json(['response' => false, 'message' => 'Failed to update product image!.']);
+                if (!$imagePath) {
+                    return response()->json(['response' => false, 'message' => 'Failed to update product image!'], 400);
                 }
 
                 $updateData['image_path'] = $image->hashName();
             }
+            // Note: If no image is provided, image_path remains unchanged in the database
 
+            // Perform the update
             $update = $product->update($updateData);
 
             if (!$update) {
