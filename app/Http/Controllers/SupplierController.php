@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
+use App\Models\Department;
+use App\Models\Region;
+use App\Models\Province;
+use App\Models\Citymun;
+use App\Models\Barangay;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -40,15 +45,20 @@ class SupplierController extends Controller
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'island' => 'required|string',
-                'region_id' => 'required|integer',
-                'province_id' => 'nullable|integer',
-                'district_id' => 'nullable|integer',
-                'city_id' => 'nullable|integer',
-                'municipality_id' => 'nullable|integer',
-                'brgy_id' => 'required|integer',
+                'department' => 'required|integer',
+                'region' => 'required|string|max:255',
+                'province' => 'required|string|max:255',
+                'citymun' => 'required|string|max:255',
+                'brgy' => 'required|string|max:255',
                 'street_address' => 'required|string|max:255',
             ]);
+
+            // Check if the supplier name already exists
+            if (Supplier::where('name', $validatedData['name'])->exists()) {
+                return response()->json([
+                    'message' => 'The supplier name already exists'
+                ], 409); // 409 Conflict status code
+            }
 
             $validatedData['modified_by'] = $request->user()->name;
 
@@ -74,6 +84,7 @@ class SupplierController extends Controller
             ], 500);
         }
     }
+
     /**
      * Display the specified resource.
      */
@@ -88,7 +99,7 @@ class SupplierController extends Controller
             return response()->json(['message' => 'Error fetching supplier'], 500);
         }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -120,13 +131,11 @@ class SupplierController extends Controller
             // Validate incoming request data
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'island' => 'required|string',
-                'region_id' => 'required|integer',
-                'province_id' => 'nullable|integer',
-                'district_id' => 'nullable|integer',
-                'city_id' => 'nullable|integer',
-                'municipality_id' => 'nullable|integer',
-                'brgy_id' => 'required|integer',
+                'department' => 'required|integer',
+                'region' => 'required|string|max:255',
+                'province' => 'required|string|max:255',
+                'citymun' => 'required|string|max:255',
+                'brgy' => 'required|string|max:255',
                 'street_address' => 'required|string|max:255',
             ]);
         } catch (ValidationException $e) {
@@ -237,5 +246,117 @@ class SupplierController extends Controller
             ], 500);
         }
     }
-    
+
+    public function fetch_department()
+    {
+        try {
+            $department = Department::query()->where('is_active', 1)->get();
+            return response()->json([
+                'department' => $department,
+                'message' => 'Successfully fetched department',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Department not found',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function fetch_region()
+    {
+        try {
+            $region = Region::query()
+                ->select('id', 'regDesc', 'regCode')
+                ->get();
+            return response()->json([
+                'region' => $region,
+                'message' => 'Successfully fetched region',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Region not found',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function fetch_province()
+    {
+        try {
+            $province = Province::query()
+                ->select(
+                    'id',
+                    'psgcCode',
+                    'provDesc',
+                    'regCode',
+                    'provCode'
+                )
+                ->get();
+            return response()->json([
+                'province' => $province,
+                'message' => 'Successfully fetched province',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching province' . $e->getMessage());
+            return response()->json([
+                'message' => 'Province not found',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function fetch_citymun()
+    {
+        try {
+            $citymun = Citymun::query()
+                ->select(
+                    'id',
+                    'psgcCode',
+                    'citymunDesc',
+                    'regDesc',
+                    'provCode',
+                    'citymunCode'
+                )
+                ->get();
+            return response()->json([
+                'citymun' => $citymun,
+                'message' => 'Successfully fetched citymun',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching supplier' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error fetching citymun',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function fetch_brgy()
+    {
+        try {
+            $brgy = Barangay::query()
+                ->select(
+                    'id',
+                    'brgyCode',
+                    'brgyDesc',
+                    'regCode',
+                    'provCode',
+                    'citymunCode'
+                )
+                ->get();
+            return response()->json([
+                'brgy' => $brgy,
+                'message' => 'Successfully fetched brgy',
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error fetching brgy' . $e->getMessage());
+            return response()->json([
+                'message' => 'Erorr fetching brgy',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }
