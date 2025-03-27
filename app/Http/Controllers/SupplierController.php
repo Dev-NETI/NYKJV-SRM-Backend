@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Supplier;
 use App\Models\Department;
@@ -19,14 +20,13 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
-
         $query = Supplier::query();
         $query->where('is_active', 1);
         if ($request->has('name') && $request->name != '') {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
-
-        $suppliers = $query->paginate(10);
+        $suppliers = $query->paginate(20);
+        $suppliers->load( ['department','region', 'province', 'citymun', 'brgy']);
         return response()->json([
             'suppliers' => $suppliers->items(),
             'pagination' => [
@@ -92,33 +92,52 @@ class SupplierController extends Controller
     {
         try {
             Log::info('Fetching supplier with ID: ' . $id);
-            $supplier = Supplier::findOrFail($id);
+            // Log the query being executed
+            DB::enableQueryLog();
+            // Retrieve only the necessary fields and load related models
+            $supplier = Supplier::select('id', 'name', 'department', 'region', 'province', 'citymun', 'brgy', 'street_address')
+                                ->with(['department', 'region', 'province', 'citymun', 'brgy'])
+                                ->find($id);
+    
+            Log::info(DB::getQueryLog());  // Log the query
+            // Check if supplier is found
+            if (!$supplier) {
+                return response()->json(['message' => 'Supplier not found'], 404);
+            }
             return response()->json($supplier, 200);
         } catch (\Exception $e) {
             Log::error('Error fetching supplier: ' . $e->getMessage());
             return response()->json(['message' => 'Error fetching supplier'], 500);
         }
     }
-
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
         try {
-            $supplier = Supplier::findOrFail($id);
+            // Eager load the related models (department, region, province, citymun, brgy)
+            $supplier = Supplier::with(['department', 'region', 'province', 'citymun', 'brgy'])
+                                ->findOrFail($id);
+    
             return response()->json([
                 'supplier' => $supplier,
-                'message' => 'Successfully fetched supplier',
+                'department' => $supplier->department,  // Send department data
+                'region' => $supplier->region,  // Send region data
+                'province' => $supplier->province,  // Send province data
+                'citymun' => $supplier->citymun,  // Send citymun data
+                'brgy' => $supplier->brgy,  // Send brgy data
+                'message' => 'Successfully fetched supplier for editing',
             ], 200);
         } catch (\Exception $e) {
-            Log::error('Error fetching supplier' . $e->getMessage());
+            Log::error('Error fetching supplier for editing: ' . $e->getMessage());
             return response()->json([
-                'message' => 'Supplier ID not found',
-                'error' => $e->getMessage()
+                'message' => 'Supplier ID not found or error fetching data',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
+    
 
     /**
      * Update the specified resource in storage.
