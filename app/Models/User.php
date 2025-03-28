@@ -36,7 +36,7 @@ class User extends Authenticatable
     ];
 
     // protected $with = ['role_users', 'roles', 'company', 'department', 'supplier'];
-    protected $with = ['role_users', 'roles'];
+    protected $with = ['role_users', 'roles', 'supplier'];
 
 
     protected static function boot()
@@ -47,11 +47,11 @@ class User extends Authenticatable
             $slug = $lastId != NULL ? encrypt($lastId->id + 1) : encrypt(1);
             $model->slug = $slug;
             $model->is_active = 1;
-            $model->modified_by = 'system';
+            $model->modified_by = Auth::user()?->full_name ?? 'System';
         });
 
         static::updating(function ($model) {
-            $model->modified_by = Auth::user()->FullName;
+            $model->modified_by = Auth::user()?->full_name ?? 'System';
         });
     }
 
