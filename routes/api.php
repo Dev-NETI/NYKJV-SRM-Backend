@@ -121,6 +121,11 @@ Route::resource('/brands', BrandController::class)->only(['index', 'store', 'upd
 // Supplier Routes
 Route::get('/supplier/departments', [SupplierController::class, 'fetch_departments']);
 Route::get('/supplier/total_count', [SupplierController::class, 'total_count']);
+Route::get('/supplier/fetch_region', [SupplierController::class, 'fetch_region']);
+Route::get('/supplier/fetch_province', [SupplierController::class, 'fetch_province']);
+Route::get('/supplier/department', [SupplierController::class, 'fetch_department']);
+Route::get('/supplier/fetch_citymun', [SupplierController::class, 'fetch_citymun']);
+Route::get('/supplier/fetch_brgy', [SupplierController::class, 'fetch_brgy']);
 Route::resource('/supplier', SupplierController::class)->only(['index', 'store', 'edit', 'destroy', 'show', 'update', 'search']);
 
 Route::resource('/document-type', DocumentTypeController::class)->only(['index']);

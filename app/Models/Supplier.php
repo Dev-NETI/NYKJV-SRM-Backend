@@ -9,22 +9,20 @@ use Illuminate\Support\Facades\Auth;
 class Supplier extends Model
 {
     use HasFactory;
+    protected $table = 'suppliers';
     protected $fillable = [
         'slug',
         'name',
-        'departments',
-        'island',
-        'region_id',
-        'province_id',
-        'district_id',
-        'city_id',
-        'municipality_id',
-        'brgy_id',
+        'department',
+        'region',
+        'province',
+        'citymun',
+        'brgy',
         'street_address',
         'is_active',
         'modified_by'
     ];
-
+  
     protected static function boot()
     {
         parent::boot();
@@ -39,7 +37,7 @@ class Supplier extends Model
             $model->modified_by = Auth::user()->full_name;
         });
     }
-
+  
     public function user()
     {
         return $this->hasMany(User::class, 'supplier_id');
@@ -65,8 +63,32 @@ class Supplier extends Model
         return $this->hasMany(OrderDocument::class, 'supplier_id');
     }
 
+
+    public function department(){
+        return $this->hasOne(Department::class, 'id', 'department');
+    }
+    
+    public function region()
+    {
+        return $this->hasOne(Region::class, 'regCode', 'region');
+    }
+    public function province()
+    {
+        return $this->hasOne(Province::class, 'provCode', 'province');
+    }
+
+    public function citymun()
+    {
+        return $this->hasOne(Citymun::class, 'citymunCode', 'citymun');
+    }
+
+    public function brgy(){
+        return $this->hasOne(Barangay::class, 'brgyCode', 'brgy');
+    }
+
     public function product()
     {
         return $this->hasMany(Products::class, 'supplier_id');
     }
+  
 }
